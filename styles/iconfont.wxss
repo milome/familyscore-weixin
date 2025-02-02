@@ -1,0 +1,37 @@
+@font-face {
+  font-family: "iconfont";
+  src: url('//at.alicdn.com/t/font_2878668_yxwuuqb1yf.woff2?t=1634088088726') format('woff2');
+}
+
+.icon {
+  font-family: "iconfont" !important;
+  font-size: 48rpx;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--primary-color);
+}
+
+.icon-add:before {
+  content: "\e656";
+}
+
+.icon-member:before {
+  content: "\e60d";
+}
+
+.icon-rule:before {
+  content: "\e654";
+}
+
+.icon-stats:before {
+  content: "\e61e";
+}
+
+.icon-record:before {
+  content: "\e618";
+}
+
+.icon-setting:before {
+  content: "\e78e";
+} 

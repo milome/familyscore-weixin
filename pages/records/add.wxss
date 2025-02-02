@@ -1,0 +1,56 @@
+.container {
+  padding: 30rpx;
+}
+
+.form-group {
+  margin-bottom: 30rpx;
+}
+
+.label {
+  display: block;
+  margin-bottom: 10rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.picker {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.placeholder {
+  color: #999;
+}
+
+.points-preview {
+  text-align: center;
+  margin: 40rpx 0;
+}
+
+.points {
+  font-size: 48rpx;
+  font-weight: bold;
+}
+
+.positive {
+  color: #1aad19;
+}
+
+.negative {
+  color: #e64340;
+}
+
+.submit-btn {
+  width: 100%;
+  background: #1aad19;
+  color: #fff;
+  font-size: 32rpx;
+  margin-top: 40rpx;
+} 

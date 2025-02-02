@@ -1,0 +1,50 @@
+.container {
+  padding: 30rpx;
+}
+
+.form-group {
+  margin-bottom: 30rpx;
+}
+
+.avatar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 0;
+}
+
+.avatar {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+}
+
+.tip {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.label {
+  display: block;
+  margin-bottom: 10rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.input {
+  width: 100%;
+  height: 80rpx;
+  padding: 0 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+}
+
+.submit-btn {
+  width: 100%;
+  background: #1aad19;
+  color: #fff;
+  font-size: 32rpx;
+  margin-top: 40rpx;
+} 

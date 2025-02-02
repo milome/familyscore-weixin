@@ -1,0 +1,54 @@
+/* pages/records/add/index.wxss */
+.container {
+  min-height: 100vh;
+  background: var(--background);
+  padding: 24rpx;
+}
+
+.form-group {
+  background: #fff;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.form-item {
+  padding: 24rpx;
+  border-bottom: 1rpx solid var(--border-color);
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  display: block;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-bottom: 16rpx;
+}
+
+.picker {
+  font-size: 32rpx;
+  color: var(--text-primary);
+}
+
+.picker.placeholder {
+  color: var(--text-placeholder);
+}
+
+.points {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.points.reward {
+  color: var(--success-color);
+}
+
+.points.penalty {
+  color: var(--error-color);
+}
+
+.submit-btn {
+  margin-top: 48rpx;
+}

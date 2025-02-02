@@ -1,0 +1,27 @@
+<view class="nav-bar">
+  <!-- 状态栏占位 -->
+  <view class="status-bar" style="height: {{statusBarHeight}}px" />
+  
+  <!-- 导航栏内容 -->
+  <view class="nav-content">
+    <!-- 返回按钮 -->
+    <view 
+      wx:if="{{back}}" 
+      class="back-btn"
+      hover-class="btn-hover"
+      bindtap="handleBack"
+    >
+      <text class="icon">←</text>
+    </view>
+    
+    <!-- 标题 -->
+    <view class="title {{back ? 'has-back' : ''}}">
+      <text wx:if="{{!loading}}">{{title}}</text>
+      <view wx:else class="loading-dots">
+        <text>.</text>
+        <text>.</text>
+        <text>.</text>
+      </view>
+    </view>
+  </view>
+</view> 

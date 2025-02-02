@@ -1,0 +1,299 @@
+@import '/styles/variables.wxss';
+
+.container {
+  min-height: 100vh;
+  background: var(--background);
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: fadeIn 0.3s;
+}
+
+/* 顶部区域 */
+.header {
+  background: var(--gradient-primary);
+  padding: 48rpx 24rpx;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -20rpx;
+  height: 40rpx;
+  background: var(--background);
+  border-radius: 50% 50% 0 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s;
+}
+
+.avatar:active {
+  transform: scale(0.95);
+}
+
+.nickname {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.welcome {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+/* 统计卡片 */
+.overview {
+  margin: -48rpx 24rpx 24rpx;
+  position: relative;
+  z-index: 2;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 24rpx 0;
+  transition: transform 0.2s;
+}
+
+.stat-item:active {
+  transform: scale(0.98);
+}
+
+.stat-item .value {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.stat-item .label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* 快捷功能 */
+.quick-actions {
+  margin: 0 24rpx 24rpx;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24rpx;
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.action-item:active {
+  transform: scale(0.95);
+}
+
+.action-item .icon {
+  font-size: 64rpx;
+  line-height: 96rpx;
+  height: 96rpx;
+  color: var(--primary-color);
+  transition: transform 0.3s;
+}
+
+.action-item:active .icon {
+  transform: scale(0.9);
+}
+
+.action-item text {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* 最近记录 */
+.recent-records {
+  margin: 0 24rpx;
+}
+
+.record-list {
+  margin: 0 -24rpx;
+}
+
+.record-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid var(--border-color);
+  transition: background-color 0.2s;
+}
+
+.record-item:active {
+  background-color: var(--primary-light);
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-item .avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  border: none;
+}
+
+.record-item .content {
+  flex: 1;
+}
+
+.record-item .title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.record-item .name {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.record-item .points {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.record-item .points.plus {
+  color: var(--success-color);
+}
+
+.record-item .points.minus {
+  color: var(--error-color);
+}
+
+.record-item .desc {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24rpx;
+  color: var(--text-disabled);
+}
+
+/* 添加动画 */
+@keyframes slideIn {
+  from {
+    transform: translateY(20rpx);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.overview,
+.quick-actions,
+.recent-records {
+  animation: slideIn 0.5s ease-out;
+}
+
+.stat-item {
+  animation: slideIn 0.5s ease-out;
+  animation-fill-mode: backwards;
+}
+
+.stat-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.stat-item:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.stat-item:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.action-item {
+  animation: slideIn 0.5s ease-out;
+  animation-fill-mode: backwards;
+  animation-delay: 0.4s;
+}
+
+.record-item {
+  animation: slideIn 0.5s ease-out;
+  animation-fill-mode: backwards;
+}
+
+.record-item:nth-child(1) {
+  animation-delay: 0.5s;
+}
+
+.record-item:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.record-item:nth-child(3) {
+  animation-delay: 0.7s;
+}
+
+/* 下拉刷新动画 */
+.scroll-view {
+  height: 100vh;
+  transition: transform 0.3s;
+}
+
+.refreshing {
+  transform: translateY(100rpx);
+}
+
+/* 页面切换动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 卡片切换动画 */
+.card {
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.card.entering {
+  transform: translateY(20rpx);
+  opacity: 0;
+}
+
+.card.leaving {
+  transform: translateY(-20rpx);
+  opacity: 0;
+} 

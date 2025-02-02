@@ -1,0 +1,63 @@
+<view class="container">
+  <!-- 顶部操作栏 -->
+  <view class="header">
+    <search placeholder="搜索记录" bindsearch="onSearch" />
+    <button class="add-btn" bindtap="addRecord">
+      <text class="icon">+</text>
+      <text>添加记录</text>
+    </button>
+  </view>
+
+  <!-- 筛选面板 -->
+  <filter-panel>
+    <view class="filter-row">
+      <date-range 
+        startDate="{{filter.startDate}}" 
+        endDate="{{filter.endDate}}"
+        bind:change="onDateChange"
+      />
+      <view class="type-filter">
+        <text 
+          class="type-btn {{filter.type === '' ? 'active' : ''}}" 
+          data-type="" 
+          bindtap="onTypeChange"
+        >全部</text>
+        <text 
+          class="type-btn {{filter.type === 'reward' ? 'active' : ''}}" 
+          data-type="reward" 
+          bindtap="onTypeChange"
+        >奖励</text>
+        <text 
+          class="type-btn {{filter.type === 'penalty' ? 'active' : ''}}" 
+          data-type="penalty" 
+          bindtap="onTypeChange"
+        >惩罚</text>
+      </view>
+    </view>
+  </filter-panel>
+
+  <!-- 记录列表 -->
+  <view class="record-list">
+    <view class="record-item" wx:for="{{records}}" wx:key="_id" bindtap="editRecord" data-id="{{item._id}}">
+      <image class="avatar" src="{{item.memberAvatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}" />
+      <view class="content">
+        <view class="title">
+          <text class="name">{{item.memberName}}</text>
+          <text class="points {{item.type === 'reward' ? 'plus' : 'minus'}}">
+            {{item.type === 'reward' ? '+' : '-'}}{{item.points}}
+          </text>
+        </view>
+        <view class="desc">
+          <text>{{item.ruleName}}</text>
+          <text class="time">{{item.createTime}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore}}">
+    <text wx:if="{{loading}}">加载中...</text>
+    <text wx:else bindtap="loadMore">加载更多</text>
+  </view>
+</view> 

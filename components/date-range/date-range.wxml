@@ -1,0 +1,27 @@
+<view class="date-range">
+  <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+    <view class="date-item">
+      <text class="label">开始日期</text>
+      <view class="picker-content">
+        <text class="{{startDate ? '' : 'placeholder'}}">
+          {{startDate || startPlaceholder}}
+        </text>
+        <text class="icon">📅</text>
+      </view>
+    </view>
+  </picker>
+
+  <text class="separator">至</text>
+
+  <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+    <view class="date-item">
+      <text class="label">结束日期</text>
+      <view class="picker-content">
+        <text class="{{endDate ? '' : 'placeholder'}}">
+          {{endDate || endPlaceholder}}
+        </text>
+        <text class="icon">📅</text>
+      </view>
+    </view>
+  </picker>
+</view> 

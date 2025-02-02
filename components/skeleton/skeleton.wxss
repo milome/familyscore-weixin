@@ -1,0 +1,132 @@
+.skeleton {
+  padding: 24rpx;
+}
+
+.skeleton-bg {
+  background: #f0f0f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  to {
+    left: 150%;
+  }
+}
+
+/* 头部骨架 */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 48rpx;
+}
+
+.header .avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+}
+
+.header .info {
+  flex: 1;
+}
+
+.header .title {
+  width: 200rpx;
+  height: 32rpx;
+  border-radius: 4rpx;
+  margin-bottom: 16rpx;
+}
+
+.header .subtitle {
+  width: 300rpx;
+  height: 24rpx;
+  border-radius: 4rpx;
+}
+
+/* 统计骨架 */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+  margin-bottom: 48rpx;
+}
+
+.stat-item .value {
+  width: 80%;
+  height: 36rpx;
+  border-radius: 4rpx;
+  margin: 0 auto 16rpx;
+}
+
+.stat-item .label {
+  width: 60%;
+  height: 24rpx;
+  border-radius: 4rpx;
+  margin: 0 auto;
+}
+
+/* 功能按钮骨架 */
+.actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24rpx;
+  margin-bottom: 48rpx;
+}
+
+.action-item .icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  margin: 0 auto 16rpx;
+}
+
+.action-item .text {
+  width: 80%;
+  height: 24rpx;
+  border-radius: 4rpx;
+  margin: 0 auto;
+}
+
+/* 列表骨架 */
+.list-item {
+  display: flex;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.list-item .avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+}
+
+.list-item .content {
+  flex: 1;
+}
+
+.list-item .title {
+  width: 60%;
+  height: 28rpx;
+  border-radius: 4rpx;
+  margin-bottom: 16rpx;
+}
+
+.list-item .desc {
+  width: 80%;
+  height: 24rpx;
+  border-radius: 4rpx;
+} 

@@ -1,0 +1,13 @@
+<view class="container">
+  <view class="header">
+    <image class="logo" src="/images/logo.png" mode="aspectFit" />
+    <text class="title">家庭积分管理</text>
+  </view>
+
+  <button 
+    class="login-btn" 
+    type="primary" 
+    loading="{{loading}}"
+    bindtap="handleLogin"
+  >微信登录</button>
+</view> 

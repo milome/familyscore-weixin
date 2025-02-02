@@ -1,0 +1,41 @@
+<scroll-view 
+  class="list-view {{className}}"
+  scroll-y
+  enable-flex
+  refresher-enabled="{{enablePullRefresh}}"
+  refresher-triggered="{{isRefreshing}}"
+  bindrefresherrefresh="onRefresh"
+  bindscrolltolower="onLoadMore"
+>
+  <slot></slot>
+  
+  <!-- 加载更多 -->
+  <view class="loading-more" wx:if="{{loading}}">
+    <view class="loading-icon"></view>
+    <text>加载中...</text>
+  </view>
+  
+  <!-- 无更多数据 -->
+  <view class="no-more" wx:if="{{!hasMore && !loading}}">
+    <text>没有更多数据了</text>
+  </view>
+  
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{isEmpty}}">
+    <image class="list-image" src="/images/empty.png" mode="aspectFit" />
+    <text class="list-text">{{emptyText}}</text>
+  </view>
+  
+  <input
+    class="list-input"
+    type="text"
+    placeholder="{{placeholder}}"
+  />
+  
+  <button
+    class="list-button"
+    bindtap="onTap"
+  >
+    <slot></slot>
+  </button>
+</scroll-view> 

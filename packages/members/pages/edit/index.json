@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "modal": "/components/modal/modal"
+  },
+  "navigationBarTitleText": "编辑成员"
+}

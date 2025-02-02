@@ -1,0 +1,54 @@
+{
+  "pages": [
+    "pages/login/index",
+    "pages/index/index",
+    "pages/members/list/index",
+    "pages/members/edit/index",
+    "pages/rules/list/index",
+    "pages/rules/edit/index",
+    "pages/records/list/index",
+    "pages/records/add/index",
+    "pages/statistics/overview/index",
+    "pages/settings/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "家庭积分管理",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#07c160",
+    "backgroundColor": "#fff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/records/list/index",
+        "text": "记录"
+      },
+      {
+        "pagePath": "pages/statistics/overview/index",
+        "text": "统计"
+      },
+      {
+        "pagePath": "pages/settings/index",
+        "text": "设置"
+      }
+    ]
+  },
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "list-view": "/components/list-view/list-view",
+    "search": "/components/search/search",
+    "calendar": "/components/calendar/calendar",
+    "date-range": "/components/date-range/date-range",
+    "filter-panel": "/components/filter-panel/filter-panel",
+    "card": "/components/card/card",
+    "modal": "/components/modal/modal"
+  }
+} 

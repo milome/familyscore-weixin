@@ -1,0 +1,39 @@
+<view class="search">
+  <view class="search-bar">
+    <text class="icon">🔍</text>
+    <input 
+      class="input" 
+      type="text"
+      value="{{value}}"
+      placeholder="{{placeholder}}"
+      confirm-type="search"
+      bindinput="onInput"
+      bindconfirm="onSearch"
+    />
+    <text 
+      class="clear-btn" 
+      wx:if="{{value}}"
+      bindtap="onClear"
+    >✕</text>
+  </view>
+  
+  <!-- 搜索历史 -->
+  <view class="search-history" wx:if="{{showHistory && history.length > 0}}">
+    <view class="history-header">
+      <text>搜索历史</text>
+      <text 
+        class="clear-history" 
+        bindtap="clearHistory"
+      >🗑️</text>
+    </view>
+    <view class="history-list">
+      <view 
+        class="history-item" 
+        wx:for="{{history}}" 
+        wx:key="*this"
+        bindtap="onHistoryTap"
+        data-keyword="{{item}}"
+      >{{item}}</view>
+    </view>
+  </view>
+</view> 

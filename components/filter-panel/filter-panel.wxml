@@ -1,0 +1,57 @@
+<view class="filter-panel {{visible ? 'show' : ''}}">
+  <view class="mask" bindtap="onClose"></view>
+  <view class="content">
+    <view class="header">
+      <text class="title">筛选</text>
+      <text class="close-btn" bindtap="onClose">✕</text>
+    </view>
+
+    <scroll-view scroll-y class="body">
+      <!-- 日期范围 -->
+      <view class="filter-section">
+        <text class="section-title">时间范围</text>
+        <date-range
+          startDate="{{filter.startDate}}"
+          endDate="{{filter.endDate}}"
+          bind:change="onDateRangeChange"
+        />
+      </view>
+
+      <!-- 类型选择 -->
+      <view class="filter-section">
+        <text class="section-title">记录类型</text>
+        <view class="type-list">
+          <view 
+            class="type-item {{filter.type === item.value ? 'active' : ''}}"
+            wx:for="{{typeOptions}}"
+            wx:key="value"
+            data-type="{{item.value}}"
+            bindtap="onTypeSelect"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <!-- 成员选择 -->
+      <view class="filter-section">
+        <text class="section-title">成员</text>
+        <view class="member-list">
+          <view 
+            class="member-item {{filter.memberId === item._id ? 'active' : ''}}"
+            wx:for="{{members}}"
+            wx:key="_id"
+            data-id="{{item._id}}"
+            bindtap="onMemberSelect"
+          >
+            <image class="avatar" src="{{item.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}" />
+            <text>{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="footer">
+      <button class="btn btn-default" bindtap="onReset">重置</button>
+      <button class="btn btn-primary" bindtap="onConfirm">确定</button>
+    </view>
+  </view>
+</view> 

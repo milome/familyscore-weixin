@@ -1,0 +1,100 @@
+<skeleton wx:if="{{loading}}" />
+
+<view class="container" wx:else>
+  <scroll-view 
+    scroll-y 
+    refresher-enabled
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+    class="scroll-view {{refreshing ? 'refreshing' : ''}}"
+  >
+    <!-- 顶部用户信息 -->
+    <view class="header">
+      <view class="user-info">
+        <image 
+          class="avatar" 
+          src="{{userInfo.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}"
+        />
+        <view class="info">
+          <text class="nickname">{{userInfo.nickName || '未登录'}}</text>
+          <text class="welcome">欢迎使用家庭积分</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 积分概览 -->
+    <view class="overview">
+      <card title="本月概览">
+        <view class="stats-grid">
+          <view class="stat-item">
+            <text class="value">{{monthStats.total || 0}}</text>
+            <text class="label">总记录</text>
+          </view>
+          <view class="stat-item">
+            <text class="value">{{monthStats.totalPoints || 0}}</text>
+            <text class="label">总积分</text>
+          </view>
+          <view class="stat-item">
+            <text class="value">{{monthStats.rewards || 0}}</text>
+            <text class="label">奖励次数</text>
+          </view>
+          <view class="stat-item">
+            <text class="value">{{monthStats.penalties || 0}}</text>
+            <text class="label">惩罚次数</text>
+          </view>
+        </view>
+      </card>
+    </view>
+
+    <!-- 快捷功能 -->
+    <view class="quick-actions">
+      <card title="快捷功能">
+        <view class="action-grid">
+          <view class="action-item" bindtap="addRecord">
+            <text class="icon">➕</text>
+            <text>添加记录</text>
+          </view>
+          <view class="action-item" bindtap="goToMembers">
+            <text class="icon">👥</text>
+            <text>成员管理</text>
+          </view>
+          <view class="action-item" bindtap="goToRules">
+            <text class="icon">📋</text>
+            <text>规则管理</text>
+          </view>
+          <view class="action-item" bindtap="goToStats">
+            <text class="icon">📊</text>
+            <text>统计分析</text>
+          </view>
+        </view>
+      </card>
+    </view>
+
+    <!-- 最近记录 -->
+    <view class="recent-records">
+      <card 
+        title="最近记录" 
+        subtitle="查看更多" 
+        bind:more="goToRecords"
+      >
+        <view class="record-list">
+          <view class="record-item" wx:for="{{recentRecords}}" wx:key="_id">
+            <image class="avatar" src="{{item.memberAvatar || '/images/default-avatar.png'}}" />
+            <view class="content">
+              <view class="title">
+                <text class="name">{{item.memberName}}</text>
+                <text class="points {{item.type === 'reward' ? 'plus' : 'minus'}}">
+                  {{item.type === 'reward' ? '+' : '-'}}{{item.points}}
+                </text>
+              </view>
+              <view class="desc">
+                <text>{{item.ruleName}}</text>
+                <text class="time">{{item.createTime}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </card>
+    </view>
+  </scroll-view>
+</view> 

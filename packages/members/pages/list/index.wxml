@@ -1,0 +1,59 @@
+<!--packages/members/pages/list/index.wxml-->
+<view class="container">
+  <!-- 顶部操作栏 -->
+  <view class="header">
+    <search placeholder="搜索成员" bindsearch="onSearch" />
+    <button class="add-btn" bindtap="addMember">
+      <text class="icon">+</text>
+      <text>添加成员</text>
+    </button>
+  </view>
+
+  <!-- 成员列表 -->
+  <view class="member-list">
+    <view class="empty" wx:if="{{isEmpty}}">
+      <text class="icon">👥</text>
+      <text class="text">暂无成员，点击上方按钮添加</text>
+    </view>
+    
+    <view 
+      class="member-item" 
+      wx:for="{{members}}" 
+      wx:key="_id"
+      bindtap="editMember"
+      data-id="{{item._id}}"
+    >
+      <image 
+        class="avatar" 
+        src="{{item.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}" 
+        mode="aspectFill"
+      />
+      <view class="content">
+        <text class="name">{{item.name}}</text>
+        <text class="remark" wx:if="{{item.remark}}">{{item.remark}}</text>
+      </view>
+      <view class="actions">
+        <button 
+          class="action-btn" 
+          hover-class="btn-hover"
+          catchtap="editMember"
+          data-id="{{item._id}}"
+        >✏️</button>
+        <button 
+          class="action-btn" 
+          hover-class="btn-hover"
+          catchtap="showDeleteConfirm"
+          data-id="{{item._id}}"
+        >🗑️</button>
+      </view>
+    </view>
+  </view>
+</view>
+
+<modal
+  visible="{{showDeleteModal}}"
+  title="删除确认"
+  content="确定要删除该成员吗？删除后无法恢复。"
+  bind:confirm="confirmDelete"
+  bind:cancel="hideDeleteModal"
+/>

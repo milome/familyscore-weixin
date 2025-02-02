@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "规则管理",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "search": "/components/search/search",
+    "modal": "/components/modal/modal"
+  }
+}

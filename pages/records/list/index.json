@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "积分记录",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "search": "/components/search/search",
+    "filter-panel": "/components/filter-panel/filter-panel",
+    "date-range": "/components/date-range/date-range"
+  }
+}

@@ -1,0 +1,78 @@
+.container {
+  padding: 20rpx;
+}
+
+.header {
+  padding: 20rpx 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.add-btn {
+  background: #1aad19;
+  color: #fff;
+  font-size: 28rpx;
+}
+
+.rule-list {
+  margin-top: 20rpx;
+}
+
+.rule-item {
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  background: #fff;
+  border-radius: 10rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.rule-info {
+  margin-bottom: 20rpx;
+}
+
+.title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.points-info {
+  margin: 10rpx 0;
+}
+
+.points {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.positive {
+  color: #1aad19;
+}
+
+.negative {
+  color: #e64340;
+}
+
+.description {
+  font-size: 28rpx;
+  color: #666;
+  display: block;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10rpx;
+}
+
+.edit-btn {
+  background: #1aad19;
+  color: #fff;
+}
+
+.delete-btn {
+  background: #e64340;
+  color: #fff;
+} 

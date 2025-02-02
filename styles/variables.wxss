@@ -1,0 +1,23 @@
+/* 主题色 */
+page {
+  /* 品牌色 */
+  --primary-color: #1890ff;
+  --primary-light: #e6f7ff;
+  --primary-dark: #096dd9;
+
+  /* 功能色 */
+  --success-color: #52c41a;
+  --warning-color: #faad14;
+  --error-color: #f5222d;
+
+  /* 中性色 */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-disabled: #999999;
+  --border-color: #e8e8e8;
+  --background: #f5f7fa;
+
+  /* 渐变色 */
+  --gradient-primary: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  --gradient-success: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+} 

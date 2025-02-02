@@ -1,0 +1,141 @@
+.filter-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 100;
+  transform: translateX(100%);
+  transition: transform 0.3s;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.filter-panel.show {
+  transform: translateX(0);
+}
+
+.mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80%;
+  height: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1rpx solid #eee;
+}
+
+.title {
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.close {
+  padding: 10rpx;
+}
+
+.close image {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.filter-section {
+  padding: 24rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.section-title {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 24rpx;
+}
+
+.type-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.type-item {
+  padding: 12rpx 24rpx;
+  margin: 0 16rpx 16rpx 0;
+  background: #f5f7fa;
+  border-radius: 32rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.type-item.active {
+  background: #07c160;
+  color: #fff;
+}
+
+.member-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.member-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120rpx;
+  margin: 0 24rpx 24rpx 0;
+}
+
+.member-item .avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-bottom: 12rpx;
+}
+
+.member-item text {
+  font-size: 24rpx;
+  color: #666;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-item.active text {
+  color: #07c160;
+}
+
+.footer {
+  padding: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1rpx solid #eee;
+}
+
+.footer .btn {
+  flex: 1;
+  margin: 0 12rpx;
+} 

@@ -1,0 +1,18 @@
+<view class="date-picker">
+  <view class="label" wx:if="{{label}}">{{label}}</view>
+  <picker
+    mode="date"
+    value="{{value}}"
+    start="{{start}}"
+    end="{{end}}"
+    fields="{{fields}}"
+    bindchange="onChange"
+  >
+    <view class="picker-content">
+      <text class="{{value ? '' : 'placeholder'}}">
+        {{value || placeholder}}
+      </text>
+      <image class="icon" src="/images/icons/calendar.png" mode="aspectFit" />
+    </view>
+  </picker>
+</view> 

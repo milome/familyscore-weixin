@@ -1,0 +1,66 @@
+<!--packages/members/pages/edit/index.wxml-->
+<view class="container">
+  <form bindsubmit="handleSubmit">
+    <!-- 表单内容 -->
+    <view class="form-group">
+      <view class="form-item">
+        <text class="label">姓名</text>
+        <input 
+          class="input" 
+          name="name" 
+          value="{{form.name}}"
+          placeholder="请输入姓名"
+          maxlength="20"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">头像</text>
+        <view class="avatar-wrapper" bindtap="chooseAvatar">
+          <image 
+            class="avatar" 
+            src="{{form.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}" 
+            mode="aspectFill"
+          />
+          <text class="tip">点击更换头像</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">备注</text>
+        <input 
+          class="input" 
+          name="remark" 
+          value="{{form.remark}}"
+          placeholder="选填"
+          maxlength="100"
+        />
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="footer">
+      <button 
+        class="submit-btn" 
+        type="primary" 
+        form-type="submit"
+        loading="{{submitting}}"
+      >保存</button>
+
+      <button 
+        wx:if="{{id}}"
+        class="delete-btn" 
+        bindtap="showDeleteConfirm"
+      >删除</button>
+    </view>
+  </form>
+</view>
+
+<!-- 删除确认框 -->
+<modal
+  visible="{{showDeleteModal}}"
+  title="删除确认"
+  content="确定要删除该成员吗？删除后无法恢复。"
+  bind:confirm="handleDelete"
+  bind:cancel="hideDeleteModal"
+/>

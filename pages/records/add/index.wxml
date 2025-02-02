@@ -1,0 +1,58 @@
+<!--pages/records/add/index.wxml-->
+<view class="container">
+  <form bindsubmit="handleSubmit">
+    <view class="form-group">
+      <view class="form-item">
+        <text class="label">日期</text>
+        <calendar 
+          value="{{form.date}}"
+          bind:change="onDateChange"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">选择成员</text>
+        <picker 
+          mode="selector" 
+          range="{{members}}" 
+          range-key="name"
+          value="{{memberIndex}}"
+          bindchange="onMemberChange"
+        >
+          <view class="picker {{form.memberId ? '' : 'placeholder'}}">
+            {{form.memberName || '请选择成员'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">选择规则</text>
+        <picker 
+          mode="selector" 
+          range="{{rules}}" 
+          range-key="name"
+          value="{{ruleIndex}}"
+          bindchange="onRuleChange"
+        >
+          <view class="picker {{form.ruleId ? '' : 'placeholder'}}">
+            {{form.ruleName || '请选择规则'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">积分</text>
+        <view class="points {{form.type}}">
+          {{form.type === 'reward' ? '+' : '-'}}{{form.points}}
+        </view>
+      </view>
+    </view>
+
+    <button 
+      class="submit-btn" 
+      type="primary" 
+      loading="{{submitting}}"
+      bindtap="handleSubmit"
+    >保存</button>
+  </form>
+</view>

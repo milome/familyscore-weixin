@@ -1,0 +1,51 @@
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #eee;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 16rpx;
+}
+
+.content {
+  flex: 1;
+}
+
+.title {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.subtitle {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.value {
+  font-size: 28rpx;
+  color: #666;
+  margin-right: 8rpx;
+}
+
+.arrow {
+  width: 32rpx;
+  height: 32rpx;
+} 

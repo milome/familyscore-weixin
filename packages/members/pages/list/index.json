@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "search": "/components/search/search",
+    "modal": "/components/modal/modal"
+  },
+  "navigationBarTitleText": "成员管理"
+}

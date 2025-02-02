@@ -1,0 +1,49 @@
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 24rpx;
+  background: #fff;
+  border-radius: 12rpx;
+}
+
+.date-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.picker-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: #f5f7fa;
+  border-radius: 8rpx;
+}
+
+.picker-content text {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.picker-content .placeholder {
+  color: var(--text-disabled);
+}
+
+.separator {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  padding: 24rpx 0;
+}
+
+.icon {
+  font-size: 32rpx;
+  color: var(--text-secondary);
+} 

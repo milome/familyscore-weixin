@@ -1,0 +1,23 @@
+<view class="container">
+  <view class="header">
+    <text class="title">数据库测试</text>
+  </view>
+
+  <view class="test-results">
+    <view 
+      wx:for="{{testResults}}" 
+      wx:key="name"
+      class="test-item {{item.status}}"
+    >
+      <text class="test-name">{{item.name}}</text>
+      <text class="test-message">{{item.message}}</text>
+    </view>
+  </view>
+
+  <view class="actions">
+    <button 
+      type="primary" 
+      bindtap="runTests"
+    >重新测试</button>
+  </view>
+</view> 

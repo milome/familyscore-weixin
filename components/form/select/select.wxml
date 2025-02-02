@@ -1,0 +1,17 @@
+<view class="form-item">
+  <view class="label" wx:if="{{label}}">{{label}}</view>
+  <picker
+    mode="{{mode}}"
+    range="{{options}}"
+    range-key="{{rangeKey}}"
+    value="{{value}}"
+    bindchange="onChange"
+  >
+    <view class="picker">
+      <text class="{{value ? '' : 'placeholder'}}">
+        {{value ? selected[rangeKey] : placeholder}}
+      </text>
+      <image class="arrow" src="/images/icons/arrow-down.png" mode="aspectFit" />
+    </view>
+  </picker>
+</view> 

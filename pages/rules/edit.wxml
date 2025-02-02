@@ -1,0 +1,22 @@
+<view class="container">
+  <form bindsubmit="submitForm">
+    <view class="form-group">
+      <text class="label">规则名称</text>
+      <input class="input" name="title" value="{{formData.title}}" placeholder="请输入规则名称"/>
+    </view>
+
+    <view class="form-group">
+      <text class="label">积分值</text>
+      <input class="input" type="number" name="points" value="{{formData.points}}" placeholder="请输入积分值（正数为奖励，负数为惩罚）"/>
+    </view>
+
+    <view class="form-group">
+      <text class="label">规则说明</text>
+      <textarea class="textarea" name="description" value="{{formData.description}}" placeholder="请输入规则说明"/>
+    </view>
+
+    <view class="form-group">
+      <button form-type="submit" class="submit-btn">保存</button>
+    </view>
+  </form>
+</view> 

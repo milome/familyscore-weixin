@@ -1,0 +1,13 @@
+<view class="card {{className}}">
+  <view class="card-header" wx:if="{{title || subtitle}}">
+    <text class="card-title">{{title}}</text>
+    <text 
+      class="card-subtitle" 
+      wx:if="{{subtitle}}" 
+      bindtap="onMoreTap"
+    >{{subtitle}}</text>
+  </view>
+  <view class="card-content">
+    <slot></slot>
+  </view>
+</view> 

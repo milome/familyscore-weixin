@@ -1,0 +1,54 @@
+<!--pages/rules/list/index.wxml-->
+<view class="container">
+  <!-- 顶部操作栏 -->
+  <view class="header">
+    <search placeholder="搜索规则" bindsearch="onSearch" />
+    <button class="add-btn" bindtap="addRule">
+      <text class="icon">+</text>
+      <text>添加规则</text>
+    </button>
+  </view>
+
+  <!-- 规则列表 -->
+  <view class="rule-list">
+    <view class="empty" wx:if="{{isEmpty}}">
+      <text class="icon">📋</text>
+      <text class="text">暂无规则，点击上方按钮添加</text>
+    </view>
+    
+    <view 
+      class="rule-item" 
+      wx:for="{{rules}}" 
+      wx:key="_id"
+      bindtap="editRule"
+      data-id="{{item._id}}"
+    >
+      <view class="content">
+        <text class="name">{{item.name}}</text>
+        <text class="points {{item.type}}">{{item.type === 'reward' ? '+' : ''}}{{item.type === 'penalty' ? -item.points : item.points}}</text>
+      </view>
+      <view class="actions">
+        <button 
+          class="action-btn" 
+          hover-class="btn-hover"
+          catchtap="editRule"
+          data-id="{{item._id}}"
+        >✏️</button>
+        <button 
+          class="action-btn" 
+          hover-class="btn-hover"
+          catchtap="showDeleteConfirm"
+          data-id="{{item._id}}"
+        >🗑️</button>
+      </view>
+    </view>
+  </view>
+</view>
+
+<modal
+  visible="{{showDeleteModal}}"
+  title="删除确认"
+  content="确定要删除该规则吗？删除后无法恢复。"
+  bind:confirm="confirmDelete"
+  bind:cancel="hideDeleteModal"
+/>

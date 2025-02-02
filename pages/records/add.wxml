@@ -1,0 +1,31 @@
+<view class="container">
+  <form bindsubmit="submitForm">
+    <view class="form-group">
+      <text class="label">选择成员</text>
+      <picker bindchange="onMemberChange" range="{{members}}" range-key="name">
+        <view class="picker {{selectedMember ? '' : 'placeholder'}}">
+          {{selectedMember ? selectedMember.name : '请选择成员'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="label">选择规则</text>
+      <picker bindchange="onRuleChange" range="{{rules}}" range-key="title">
+        <view class="picker {{selectedRule ? '' : 'placeholder'}}">
+          {{selectedRule ? selectedRule.title : '请选择规则'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="points-preview" wx:if="{{selectedRule}}">
+      <text class="points {{selectedRule.points >= 0 ? 'positive' : 'negative'}}">
+        {{selectedRule.points >= 0 ? '+' : ''}}{{selectedRule.points}}分
+      </text>
+    </view>
+
+    <view class="form-group">
+      <button form-type="submit" class="submit-btn">保存</button>
+    </view>
+  </form>
+</view> 

@@ -1,0 +1,33 @@
+page {
+  /* 主色 */
+  --primary-color: #07c160;
+  --primary-light: #95ec95;
+  
+  /* 文字颜色 */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-placeholder: #999999;
+  
+  /* 背景色 */
+  --background: #f7f7f7;
+  --border-color: #eaeaea;
+  
+  /* 功能色 */
+  --success-color: #07c160;
+  --error-color: #fa5151;
+  --warning-color: #ffc300;
+}
+
+/* 统一字体大小 */
+.text-large {
+  font-size: 40rpx; /* 20pt */
+}
+.text-normal {
+  font-size: 34rpx; /* 17pt */
+}
+.text-small {
+  font-size: 30rpx; /* 15pt */
+}
+.text-mini {
+  font-size: 24rpx; /* 12pt */
+} 

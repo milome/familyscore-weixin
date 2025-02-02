@@ -1,0 +1,24 @@
+<view class="container">
+  <form bindsubmit="submitForm">
+    <view class="form-group">
+      <view class="avatar-wrapper" bindtap="chooseAvatar">
+        <image class="avatar" src="{{formData.avatar || '/images/default-avatar.png'}}"></image>
+        <text class="tip">点击更换头像</text>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="label">姓名</text>
+      <input class="input" name="name" value="{{formData.name}}" placeholder="请输入成员姓名"/>
+    </view>
+
+    <view class="form-group">
+      <text class="label">初始积分</text>
+      <input class="input" type="number" name="points" value="{{formData.points}}" placeholder="请输入初始积分"/>
+    </view>
+
+    <view class="form-group">
+      <button form-type="submit" class="submit-btn">保存</button>
+    </view>
+  </form>
+</view> 

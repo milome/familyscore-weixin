@@ -1,0 +1,37 @@
+<view class="skeleton {{loading ? 'loading' : ''}}">
+  <!-- 头部骨架 -->
+  <view class="header">
+    <view class="avatar skeleton-bg"></view>
+    <view class="info">
+      <view class="title skeleton-bg"></view>
+      <view class="subtitle skeleton-bg"></view>
+    </view>
+  </view>
+
+  <!-- 统计骨架 -->
+  <view class="stats">
+    <view class="stat-item" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+      <view class="value skeleton-bg"></view>
+      <view class="label skeleton-bg"></view>
+    </view>
+  </view>
+
+  <!-- 功能按钮骨架 -->
+  <view class="actions">
+    <view class="action-item" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+      <view class="icon skeleton-bg"></view>
+      <view class="text skeleton-bg"></view>
+    </view>
+  </view>
+
+  <!-- 列表骨架 -->
+  <view class="list">
+    <view class="list-item" wx:for="{{[1,2,3]}}" wx:key="*this">
+      <view class="avatar skeleton-bg"></view>
+      <view class="content">
+        <view class="title skeleton-bg"></view>
+        <view class="desc skeleton-bg"></view>
+      </view>
+    </view>
+  </view>
+</view> 

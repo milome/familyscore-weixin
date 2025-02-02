@@ -1,0 +1,26 @@
+miniprogram/
+├── pages/
+│   ├── index/
+│   ├── members/
+│   ├── rules/
+│   └── records/
+├── images/
+│   ├── logo.png
+│   ├── default-avatar.png
+│   ├── home.png
+│   ├── home_selected.png
+│   ├── member.png
+│   ├── member_selected.png
+│   ├── rule.png
+│   ├── rule_selected.png
+│   ├── record.png
+│   └── record_selected.png
+├── components/
+├── utils/
+├── app.js
+├── app.json
+└── app.wxss
+cloudfunctions/
+└── login/
+    ├── index.js
+    └── package.json 

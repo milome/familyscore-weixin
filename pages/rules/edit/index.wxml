@@ -1,0 +1,60 @@
+<view class="container">
+  <form bindsubmit="handleSubmit">
+    <view class="form-group">
+      <view class="form-item">
+        <text class="label">规则名称</text>
+        <input 
+          class="input" 
+          value="{{form.name}}"
+          bindinput="onNameInput"
+          placeholder="请输入规则名称"
+          maxlength="50"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">类型</text>
+        <radio-group 
+          class="type-group"
+          bindchange="onTypeChange"
+        >
+          <label class="type-item">
+            <radio value="reward" checked="{{form.type === 'reward'}}" />
+            <text>奖励</text>
+          </label>
+          <label class="type-item">
+            <radio value="penalty" checked="{{form.type === 'penalty'}}" />
+            <text>惩罚</text>
+          </label>
+        </radio-group>
+      </view>
+
+      <view class="form-item">
+        <text class="label">积分</text>
+        <input 
+          class="input" 
+          type="number"
+          value="{{form.points}}"
+          bindinput="onPointsInput"
+          placeholder="请输入积分值"
+        />
+      </view>
+    </view>
+
+    <button 
+      class="submit-btn" 
+      type="primary" 
+      loading="{{submitting}}"
+      bindtap="handleSubmit"
+    >保存</button>
+  </form>
+</view>
+
+<!-- 删除确认框 -->
+<modal
+  visible="{{showDeleteModal}}"
+  title="删除确认"
+  content="确定要删除该规则吗？删除后无法恢复。"
+  bind:confirm="handleDelete"
+  bind:cancel="hideDeleteModal"
+/> 

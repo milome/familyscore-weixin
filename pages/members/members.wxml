@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="header">
+    <button class="add-btn" bindtap="addMember">添加成员</button>
+  </view>
+  
+  <view class="member-list">
+    <view class="member-item" wx:for="{{members}}" wx:key="_id">
+      <image class="avatar" src="{{item.avatar || '/images/default-avatar.png'}}"></image>
+      <view class="info">
+        <text class="name">{{item.name}}</text>
+        <text class="points">总积分: {{item.points}}</text>
+      </view>
+      <view class="actions">
+        <button class="edit-btn" size="mini" bindtap="editMember" data-id="{{item._id}}">编辑</button>
+        <button class="delete-btn" size="mini" bindtap="deleteMember" data-id="{{item._id}}">删除</button>
+      </view>
+    </view>
+  </view>
+</view> 

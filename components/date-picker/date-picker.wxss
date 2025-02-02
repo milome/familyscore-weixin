@@ -1,0 +1,27 @@
+.date-picker {
+  padding: 24rpx;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.picker-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: #f5f7fa;
+  border-radius: 8rpx;
+}
+
+.placeholder {
+  color: #999;
+}
+
+.icon {
+  width: 32rpx;
+  height: 32rpx;
+} 

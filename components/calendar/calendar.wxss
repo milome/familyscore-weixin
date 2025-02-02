@@ -1,0 +1,21 @@
+.calendar {
+  width: 100%;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  background: #fff;
+  border-radius: 8rpx;
+}
+
+.value {
+  font-size: 32rpx;
+  color: var(--text-primary);
+}
+
+.icon {
+  font-size: 36rpx;
+} 

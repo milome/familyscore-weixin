@@ -1,0 +1,87 @@
+.container {
+  min-height: 100vh;
+  background: var(--background);
+  padding: 24rpx;
+}
+
+.form-group {
+  background: #fff;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.form-item {
+  padding: 24rpx;
+  border-bottom: 1rpx solid var(--border-color);
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  display: block;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-bottom: 16rpx;
+}
+
+.input {
+  font-size: 32rpx;
+  color: var(--text-primary);
+}
+
+.type-group {
+  display: flex;
+  gap: 48rpx;
+}
+
+.type-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.submit-btn {
+  margin-top: 48rpx;
+}
+
+/* 单选框样式 */
+.radio-group {
+  flex: 1;
+  display: flex;
+  gap: 48rpx;
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid var(--border-color);
+  transition: all 0.3s;
+}
+
+.radio.checked {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.radio radio {
+  display: none;
+}
+
+/* 底部按钮 */
+.footer {
+  padding: 0 48rpx;
+}
+
+.delete-btn {
+  background: #fff;
+  color: var(--error-color);
+}
+
+.delete-btn::after {
+  border-color: var(--error-color);
+} 

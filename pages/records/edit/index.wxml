@@ -1,0 +1,87 @@
+<view class="container">
+  <form bindsubmit="handleSubmit">
+    <!-- 表单内容 -->
+    <view class="form-group">
+      <view class="form-item">
+        <text class="label">成员</text>
+        <picker 
+          mode="selector" 
+          range="{{members}}" 
+          range-key="name"
+          value="{{memberIndex}}"
+          bindchange="onMemberChange"
+        >
+          <view class="picker {{form.memberId ? '' : 'placeholder'}}">
+            {{form.memberId ? members[memberIndex].name : '请选择成员'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">规则</text>
+        <picker 
+          mode="selector" 
+          range="{{rules}}" 
+          range-key="name"
+          value="{{ruleIndex}}"
+          bindchange="onRuleChange"
+        >
+          <view class="picker {{form.ruleId ? '' : 'placeholder'}}">
+            {{form.ruleId ? rules[ruleIndex].name : '请选择规则'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">积分</text>
+        <view class="points {{form.type === 'reward' ? 'plus' : 'minus'}}">
+          {{form.type === 'reward' ? '+' : '-'}}{{form.points || 0}}
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">备注</text>
+        <input 
+          class="input" 
+          name="remark" 
+          value="{{form.remark}}"
+          placeholder="选填"
+          maxlength="100"
+        />
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="footer">
+      <button 
+        class="submit-btn" 
+        type="primary" 
+        form-type="submit"
+        loading="{{submitting}}"
+      >保存</button>
+
+      <button 
+        wx:if="{{id}}"
+        class="delete-btn" 
+        bindtap="showDeleteConfirm"
+      >删除</button>
+    </view>
+  </form>
+</view>
+
+<!-- 删除确认框 -->
+<modal
+  visible="{{showDeleteModal}}"
+  title="删除确认"
+  content="确定要删除该记录吗？删除后无法恢复。"
+  bind:confirm="handleDelete"
+  bind:cancel="hideDeleteModal"
+/>
+
+<view class="header">
+  <text 
+    class="back-icon" 
+    bindtap="onBack"
+  >←</text>
+  <text class="title">{{id ? '编辑记录' : '添加记录'}}</text>
+</view> 

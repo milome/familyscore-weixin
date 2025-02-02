@@ -1,0 +1,84 @@
+.container {
+  padding: 20rpx;
+}
+
+.header {
+  padding: 20rpx 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.add-btn {
+  background: #1aad19;
+  color: #fff;
+  font-size: 28rpx;
+}
+
+.record-list {
+  margin-top: 20rpx;
+}
+
+.record-item {
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  background: #fff;
+  border-radius: 10rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.record-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+}
+
+.name {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.points-info {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.points {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.positive {
+  color: #1aad19;
+}
+
+.negative {
+  color: #e64340;
+}
+
+.rule-title {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.time-info {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.time {
+  font-size: 24rpx;
+  color: #999;
+} 

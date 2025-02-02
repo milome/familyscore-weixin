@@ -1,0 +1,25 @@
+<view class="container">
+  <view class="header">
+    <button class="add-btn" bindtap="addRecord">添加记录</button>
+  </view>
+  
+  <view class="record-list">
+    <view class="record-item" wx:for="{{records}}" wx:key="_id">
+      <view class="record-info">
+        <view class="member-info">
+          <image class="avatar" src="{{item.memberAvatar || '/images/default-avatar.png'}}"></image>
+          <text class="name">{{item.memberName}}</text>
+        </view>
+        <view class="points-info">
+          <text class="points {{item.points >= 0 ? 'positive' : 'negative'}}">
+            {{item.points >= 0 ? '+' : ''}}{{item.points}}分
+          </text>
+          <text class="rule-title">{{item.ruleTitle}}</text>
+        </view>
+        <view class="time-info">
+          <text class="time">{{item.createTime}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

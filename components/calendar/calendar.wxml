@@ -1,0 +1,12 @@
+<view class="calendar">
+  <picker 
+    mode="date" 
+    value="{{date}}"
+    bindchange="onConfirm"
+  >
+    <view class="input">
+      <text class="value">{{date || placeholder}}</text>
+      <text class="icon">📅</text>
+    </view>
+  </picker>
+</view> 

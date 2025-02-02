@@ -1,0 +1,132 @@
+<view class="container">
+  <form bindsubmit="handleSubmit">
+    <!-- 头像上传 -->
+    <view class="avatar-upload" bindtap="chooseAvatar">
+      <image 
+        class="avatar" 
+        src="{{form.avatarUrl || '/images/default-avatar.png'}}" 
+        mode="aspectFill"
+      />
+      <view class="upload-tip">点击更换头像</view>
+    </view>
+
+    <!-- 表单内容 -->
+    <view class="form-group">
+      <view class="form-item">
+        <text class="label">姓名</text>
+        <input 
+          class="input" 
+          name="name" 
+          value="{{form.name}}"
+          placeholder="请输入成员姓名"
+          maxlength="20"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">角色</text>
+        <picker 
+          mode="selector"
+          range="{{roles}}"
+          range-key="label"
+          value="{{roleIndex}}"
+          bindchange="onRoleChange"
+        >
+          <view class="picker {{form.role ? '' : 'placeholder'}}">
+            {{roles[roleIndex].label || '请选择角色'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">性别</text>
+        <radio-group class="radio-group" bindchange="onGenderChange">
+          <label class="radio-label" wx:for="{{genders}}" wx:key="value">
+            <radio 
+              value="{{item.value}}" 
+              checked="{{form.gender === item.value}}"
+            />
+            <text>{{item.label}}</text>
+          </label>
+        </radio-group>
+      </view>
+
+      <view class="form-item">
+        <text class="label">家庭关系</text>
+        <view class="relations">
+          <view 
+            class="relation-item"
+            wx:for="{{form.relations}}"
+            wx:key="memberId"
+          >
+            <picker 
+              mode="selector"
+              range="{{members}}"
+              range-key="name"
+              value="{{item.memberIndex}}"
+              bindchange="onRelationMemberChange"
+              data-index="{{index}}"
+            >
+              <view class="picker">{{item.memberName || '请选择成员'}}</view>
+            </picker>
+            <picker 
+              mode="selector"
+              range="{{relationTypes}}"
+              range-key="label"
+              value="{{item.relationIndex}}"
+              bindchange="onRelationTypeChange"
+              data-index="{{index}}"
+            >
+              <view class="picker">{{relationTypes[item.relationIndex].label || '请选择关系'}}</view>
+            </picker>
+            <button 
+              class="delete-btn"
+              bindtap="removeRelation"
+              data-index="{{index}}"
+            >删除</button>
+          </view>
+          <button 
+            class="add-btn"
+            bindtap="addRelation"
+          >添加关系</button>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">备注</text>
+        <input 
+          class="input" 
+          name="remark" 
+          value="{{form.remark}}"
+          placeholder="选填"
+          maxlength="50"
+        />
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="footer">
+      <button 
+        class="submit-btn" 
+        type="primary" 
+        form-type="submit"
+        loading="{{submitting}}"
+      >保存</button>
+
+      <button 
+        wx:if="{{id}}"
+        class="delete-btn" 
+        bindtap="showDeleteConfirm"
+      >删除</button>
+    </view>
+  </form>
+</view>
+
+<!-- 删除确认框 -->
+<modal
+  visible="{{showDeleteModal}}"
+  title="删除确认"
+  content="确定要删除该成员吗？删除后无法恢复。"
+  bind:confirm="handleDelete"
+  bind:cancel="hideDeleteModal"
+/> 

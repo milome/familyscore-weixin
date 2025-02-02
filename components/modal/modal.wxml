@@ -1,0 +1,25 @@
+<view class="modal {{visible ? 'show' : ''}}">
+  <view class="mask" bindtap="onCancel"></view>
+  <view class="content">
+    <view class="header" wx:if="{{title}}">
+      <text class="title">{{title}}</text>
+    </view>
+    <view class="body">
+      <text wx:if="{{content}}">{{content}}</text>
+      <slot></slot>
+    </view>
+    <view class="footer">
+      <button 
+        class="btn cancel" 
+        bindtap="onCancel"
+        loading="{{cancelLoading}}"
+      >{{cancelText}}</button>
+      <button 
+        class="btn confirm" 
+        type="primary"
+        bindtap="onConfirm"
+        loading="{{confirmLoading}}"
+      >{{confirmText}}</button>
+    </view>
+  </view>
+</view> 

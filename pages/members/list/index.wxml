@@ -1,0 +1,57 @@
+<view class="container">
+  <!-- 顶部操作栏 -->
+  <view class="header">
+    <search placeholder="搜索成员" bindsearch="onSearch" />
+    <button 
+      class="add-btn" 
+      bindtap="addMember"
+    >
+      <text class="icon">+</text>
+      <text>添加成员</text>
+    </button>
+  </view>
+
+  <!-- 成员列表 -->
+  <view class="member-list">
+    <view class="empty" wx:if="{{isEmpty}}">
+      <text class="icon">👥</text>
+      <text class="text">暂无成员，点击上方按钮添加</text>
+    </view>
+    
+    <view 
+      class="member-item" 
+      wx:for="{{members}}" 
+      wx:key="_id"
+      bindtap="editMember"
+      data-id="{{item._id}}"
+    >
+      <view class="content">
+        <image class="avatar" src="{{item.avatar || '/images/default-avatar.png'}}" />
+        <text class="name">{{item.name}}</text>
+        <text class="points">{{item.points || 0}}分</text>
+      </view>
+      <view class="actions">
+        <button 
+          class="action-btn" 
+          hover-class="btn-hover"
+          catchtap="editMember"
+          data-id="{{item._id}}"
+        >✏️</button>
+        <button 
+          class="action-btn" 
+          hover-class="btn-hover"
+          catchtap="showDeleteConfirm"
+          data-id="{{item._id}}"
+        >🗑️</button>
+      </view>
+    </view>
+  </view>
+</view>
+
+<modal
+  visible="{{showDeleteModal}}"
+  title="删除确认"
+  content="确定要删除该成员吗？删除后无法恢复。"
+  bind:confirm="confirmDelete"
+  bind:cancel="hideDeleteModal"
+/> 
