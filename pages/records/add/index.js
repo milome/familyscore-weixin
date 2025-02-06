@@ -2,7 +2,7 @@
 const db = wx.cloud.database()
 const _ = db.command
 const { addRecord } = require('../../../services/records')
-const { getChildList } = require('../../../services/user')  // 使用 user 服务获取孩子列表
+const { getChildList, getCurrentChild, addPoints } = require('../../../services/user')  // 使用 user 服务获取孩子列表
 const { getRuleList } = require('../../../services/rules')
 
 Page({
@@ -16,7 +16,8 @@ Page({
     selectedRule: null,
     loading: false,
     memberList: [], // 存储孩子列表
-    ruleList: []
+    ruleList: [],
+    currentChild: null
   },
 
   /**
@@ -198,7 +199,56 @@ Page({
     }
   },
 
-  handleSubmit() {
-    this.saveRecord()
+  async handleSubmit() {
+    if (this.data.loading) return
+    if (!this.data.selectedRule) {
+      wx.showToast({
+        title: '请选择规则',
+        icon: 'none'
+      })
+      return
+    }
+
+    try {
+      this.setData({ loading: true })
+      
+      // 获取当前孩子
+      const child = await getCurrentChild()
+      if (!child) {
+        wx.showToast({
+          title: '请先选择孩子',
+          icon: 'none'
+        })
+        return
+      }
+
+      // 添加积分记录
+      const rule = this.data.selectedRule
+      console.log('添加积分记录:', {
+        childId: child._id,
+        ruleId: rule._id,
+        ruleName: rule.name,
+        points: rule.points,
+        time: new Date().toISOString()
+      })
+
+      await addPoints(child._id, rule.points)
+
+      wx.showToast({
+        title: '添加成功',
+        icon: 'success'
+      })
+
+      // 返回上一页
+      wx.navigateBack()
+    } catch (err) {
+      console.error('添加失败:', err)
+      wx.showToast({
+        title: '添加失败',
+        icon: 'error'
+      })
+    } finally {
+      this.setData({ loading: false })
+    }
   }
 })

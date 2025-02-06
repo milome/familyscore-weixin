@@ -171,9 +171,17 @@ Page({
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
       const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
+      // 确保有当前孩子
+      if (!this.data.currentChild?._id) {
+        console.log('loadMonthStats: 没有当前孩子')
+        return
+      }
+
+      // 只查询当前孩子的记录
       const res = await db.collection('point_records')
         .where({
-          isDeleted: false,
+          childId: this.data.currentChild._id,
+          isDeleted: _.neq(true),
           createTime: _.gte(firstDay).and(_.lte(lastDay))
         })
         .get()
@@ -187,13 +195,20 @@ Page({
 
       res.data.forEach(record => {
         if (record.points) {
-          stats.totalPoints += record.points
           if (record.type === 'reward') {
+            stats.totalPoints += record.points
             stats.rewards++
           } else if (record.type === 'penalty') {
+            stats.totalPoints -= record.points
             stats.penalties++
           }
         }
+      })
+
+      console.log('本月统计:', {
+        childId: this.data.currentChild._id,
+        childName: this.data.currentChild.name,
+        stats
       })
 
       this.setData({ monthStats: stats })

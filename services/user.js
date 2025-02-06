@@ -138,13 +138,35 @@ async function getChildPoints(childId) {
         totalPoints: $.sum($.cond({
           if: $.eq(['$type', 'reward']),
           then: '$points',
-          else: $.multiply(['$points', -1])
+          else: $.multiply(['$points', -1])  // penalty 类型取负值
         }))
       })
       .end()
 
     const points = list.length > 0 ? list[0].totalPoints : 0
-    console.log('获取积分结果:', { childId, points, list }) // 添加日志便于调试
+    
+    // 添加详细日志
+    console.log('积分计算详情:', {
+      childId,
+      points,
+      aggregateResult: list,
+      time: new Date().toISOString()
+    })
+
+    // 再查询一下原始记录用于验证
+    const records = await db.collection('point_records')
+      .where({
+        childId,
+        isDeleted: _.neq(true)
+      })
+      .orderBy('createTime', 'desc')
+      .get()
+
+    console.log('积分记录详情:', {
+      childId,
+      records: records.data,
+      time: new Date().toISOString()
+    })
 
     return {
       success: true,
@@ -168,6 +190,12 @@ async function addPoints(childId, points) {
   }
 
   try {
+    console.log('开始增加积分:', {
+      childId,
+      points,
+      time: new Date().toISOString()
+    })
+
     // 在 point_records 集合中创建奖励记录
     const recordData = {
       childId,
@@ -178,15 +206,27 @@ async function addPoints(childId, points) {
       isDeleted: false
     }
 
-    await db.collection('point_records').add({
+    const result = await db.collection('point_records').add({
       data: recordData
+    })
+
+    console.log('积分增加完成:', {
+      childId,
+      points,
+      recordId: result._id,
+      time: new Date().toISOString()
     })
 
     return {
       success: true
     }
   } catch (err) {
-    console.error('增加积分失败:', err)
+    console.error('增加积分失败:', {
+      childId,
+      points,
+      error: err,
+      time: new Date().toISOString()
+    })
     throw err
   }
 }
@@ -203,6 +243,13 @@ async function deductPoints(childId, points, extra = {}) {
   }
 
   try {
+    console.log('开始扣除积分:', {
+      childId,
+      points,
+      extra,
+      time: new Date().toISOString()
+    })
+
     // 在 point_records 集合中创建扣除记录
     const recordData = {
       childId,
@@ -216,15 +263,27 @@ async function deductPoints(childId, points, extra = {}) {
       isDeleted: false
     }
 
-    await db.collection('point_records').add({
+    const result = await db.collection('point_records').add({
       data: recordData
+    })
+
+    console.log('积分扣除完成:', {
+      childId,
+      points,
+      recordId: result._id,
+      time: new Date().toISOString()
     })
 
     return {
       success: true
     }
   } catch (err) {
-    console.error('扣除积分失败:', err)
+    console.error('扣除积分失败:', {
+      childId,
+      points,
+      error: err,
+      time: new Date().toISOString()
+    })
     throw err
   }
 }

@@ -56,8 +56,12 @@ Page({
         return
       }
 
-      // 扣除积分
-      await deductPoints(currentChild._id, card.points)
+      // 扣除积分并添加记录
+      await deductPoints(currentChild._id, card.points, {
+        description: `兑换刮刮卡 - ${card.title}`,  // 添加积分记录描述
+        ruleId: card._id,
+        ruleName: card.title
+      })
       
       // 更新页面数据
       this.setData({ 
@@ -128,6 +132,8 @@ Page({
 
     try {
       this.setData({ claiming: true })
+      
+      // 只标记奖品已领取，不再扣除积分
       await scratchService.claimPrize(this.data.id)
       
       this.setData({ 
@@ -136,10 +142,6 @@ Page({
       })
     } catch (err) {
       console.error('领取失败:', err)
-      // 如果领取失败，退还积分
-      if (this.data.currentChild && this.data.card) {
-        await deductPoints(this.data.currentChild._id, this.data.card.points)
-      }
       wx.showToast({
         title: '领取失败',
         icon: 'error'
