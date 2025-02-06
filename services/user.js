@@ -117,71 +117,111 @@ async function getChildList() {
  * 获取孩子积分
  */
 async function getChildPoints(childId) {
-  if (!childId) {
-    return {
-      success: true,
-      points: 0
-    }
-  }
-
   try {
-    const $ = db.command.aggregate
-    // 从 point_records 集合计算总积分
-    const { list } = await db.collection('point_records')
-      .aggregate()
-      .match({
+    const db = wx.cloud.database()
+    const _ = db.command
+    
+    // 先获取总记录数
+    const { total } = await db.collection('point_records')
+      .where({
         childId,
-        isDeleted: _.neq(true)
+        isDeleted: false
       })
-      .group({
-        _id: null,
-        rewardPoints: $.sum($.cond({
-          if: $.eq(['$type', 'reward']),
-          then: '$points',
-          else: 0
-        })),
-        penaltyPoints: $.sum($.cond({
-          if: $.eq(['$type', 'penalty']),
-          then: '$points',
-          else: 0
+      .count()
+    
+    // 分批获取所有记录
+    const batchSize = 20  // 微信小程序单次查询限制
+    const batchTimes = Math.ceil(total / batchSize)
+    const tasks = []
+    
+    console.log('开始分页获取积分记录:', {
+      total,
+      batchSize,
+      batchTimes,
+      time: new Date().toISOString()
+    })
+    
+    for (let i = 0; i < batchTimes; i++) {
+      console.log(`准备获取第 ${i + 1}/${batchTimes} 批记录`)
+      const promise = db.collection('point_records')
+        .where({
+          childId,
+          isDeleted: false
+        })
+        .skip(i * batchSize)
+        .limit(batchSize)
+        .get()
+      tasks.push(promise)
+    }
+
+    // 等待所有请求完成
+    const results = await Promise.all(tasks)
+    console.log('获取到的批次数:', results.length)
+    results.forEach((result, index) => {
+      console.log(`第 ${index + 1} 批记录:`, {
+        count: result.data.length,
+        records: result.data.map(r => ({
+          points: r.points,
+          type: r.type,
+          description: r.description
         }))
       })
-      .end()
-
-    // 奖励积分加上，惩罚积分减去
-    const points = list.length > 0 ? 
-      (list[0].rewardPoints - list[0].penaltyPoints) : 0
-
-    // 添加详细日志
+    })
+    
+    // 合并所有批次的记录
+    const records = results.reduce((acc, cur) => [...acc, ...cur.data], [])
+    
+    // 获取完所有记录后再排序
+    records.sort((a, b) => b.createTime - a.createTime)
+    
+    console.log('获取到的积分记录:', {
+      childId,
+      recordCount: records.length,
+      total,
+      batchTimes,
+      records: records.map(r => ({
+        points: r.points,
+        type: r.type,
+        description: r.description,
+        createTime: r.createTime
+      }))
+    })
+    
+    // 计算总积分
+    let rewardPoints = 0
+    let penaltyPoints = 0
+    
+    records.forEach(record => {
+      if (record.type === 'reward') {
+        rewardPoints += record.points
+      } else if (record.type === 'penalty') {
+        penaltyPoints += record.points
+      }
+    })
+    
+    const points = rewardPoints - penaltyPoints
+    
     console.log('积分计算详情:', {
       childId,
       points,
-      rewardPoints: list[0]?.rewardPoints || 0,
-      penaltyPoints: list[0]?.penaltyPoints || 0,
+      rewardPoints,
+      penaltyPoints,
       time: new Date().toISOString()
     })
-
-    // 再查询一下原始记录用于验证
-    const records = await db.collection('point_records')
-      .where({
-        childId,
-        isDeleted: _.neq(true)
-      })
-      .orderBy('createTime', 'desc')
-      .get()
-
+    
     console.log('积分记录详情:', {
       childId,
-      records: records.data,
+      records,
       time: new Date().toISOString()
     })
-
+    
     return {
-      success: true,
-      points
+      points,
+      rewardPoints,
+      penaltyPoints
     }
   } catch (err) {
-    console.error('获取孩子积分失败:', err)
+    console.error('获取积分失败:', err)
     throw err
   }
 }
@@ -206,9 +246,23 @@ async function addPoints(childId, points, extra = {}) {
       time: new Date().toISOString()
     })
 
-    // 只更新孩子的积分
+    // 创建积分记录
     const db = wx.cloud.database()
     const _ = db.command
+    await db.collection('point_records').add({
+      data: {
+        childId,
+        points: Math.abs(points),
+        type: points >= 0 ? 'reward' : 'penalty',
+        description: extra.description || '',
+        ruleName: extra.ruleName || '',
+        createTime: db.serverDate(),
+        updateTime: db.serverDate(),
+        isDeleted: false
+      }
+    })
+
+    // 更新孩子积分
     await db.collection('children')
       .doc(childId)
       .update({
@@ -259,21 +313,39 @@ async function deductPoints(childId, points, extra = {}) {
       time: new Date().toISOString()
     })
 
-    // 只更新孩子的积分
     const db = wx.cloud.database()
     const _ = db.command
+
+    // 确保扣除的是正数
+    const pointsToDeduct = Math.abs(points)
+
+    // 创建积分记录
+    await db.collection('point_records').add({
+      data: {
+        childId,
+        points: pointsToDeduct,
+        type: 'penalty',
+        description: extra.description || '',
+        ruleName: extra.ruleName || '',
+        createTime: db.serverDate(),
+        updateTime: db.serverDate(),
+        isDeleted: false
+      }
+    })
+
+    // 更新孩子积分
     await db.collection('children')
       .doc(childId)
       .update({
         data: {
-          points: _.inc(-Math.abs(points)),  // 确保是负数
+          points: _.inc(-pointsToDeduct),  // 扣除积分
           updateTime: db.serverDate()
         }
       })
 
     console.log('积分扣除完成:', {
       childId,
-      points,
+      deductedPoints: pointsToDeduct,
       time: new Date().toISOString()
     })
 

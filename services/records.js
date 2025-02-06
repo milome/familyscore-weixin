@@ -27,10 +27,6 @@ async function addRecord(data) {
       data: recordData
     })
 
-    // 更新孩子的积分
-    const pointChange = data.type === 'reward' ? data.points : -data.points
-    await userService.addPoints(data.childId, pointChange)
-
     return {
       success: true,
       data: { _id }

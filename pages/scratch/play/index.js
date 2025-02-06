@@ -119,13 +119,30 @@ Page({
   // 修改领取奖励方法
   async claimPoints() {
     if (this.data.claiming) return
+    console.log('开始领取奖励:', {
+      childId: this.data.currentChild._id,
+      childName: this.data.currentChild.name,
+      points: this.data.card.points,
+      cardTitle: this.data.card.title
+    })
+    
     this.setData({ claiming: true })
 
     try {
-      // 使用已有的 deductPoints 方法扣除积分
-      await deductPoints(this.data.currentChild._id, this.data.card.points, {
+      // 使用 deductPoints 方法扣除积分
+      console.log('准备扣除积分')
+      await deductPoints(this.data.currentChild._id, -this.data.card.points, {
         description: `兑换${this.data.card.title}`,
         ruleName: '兑换奖励'  // 使用虚拟规则名
+      })
+      console.log('积分扣除完成')
+
+      // 重新获取最新积分
+      const { points: newPoints } = await getChildPoints(this.data.currentChild._id)
+      console.log('更新后的积分:', newPoints)
+
+      this.setData({
+        childPoints: newPoints
       })
 
       wx.showToast({
@@ -139,6 +156,11 @@ Page({
 
     } catch (err) {
       console.error('领取失败:', err)
+      console.error('错误详情:', {
+        childId: this.data.currentChild._id,
+        points: this.data.card.points,
+        error: err
+      })
       wx.showToast({
         title: '领取失败',
         icon: 'error'
