@@ -1,4 +1,10 @@
 <view class="container">
+  <nav-bar title="积分记录">
+    <view slot="left">
+      <text class="back-btn" bindtap="goBack">返回</text>
+    </view>
+  </nav-bar>
+
   <!-- 顶部操作栏 -->
   <view class="header">
     <search placeholder="搜索记录" bindsearch="onSearch" />
@@ -38,11 +44,11 @@
 
   <!-- 记录列表 -->
   <view class="record-list">
-    <view class="record-item" wx:for="{{records}}" wx:key="_id" bindtap="editRecord" data-id="{{item._id}}">
-      <image class="avatar" src="{{item.memberAvatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}" />
+    <view class="record-item" wx:for="{{records}}" wx:key="_id">
+      <view class="text-avatar">{{item.childName[0]}}</view>
       <view class="content">
         <view class="title">
-          <text class="name">{{item.memberName}}</text>
+          <text class="name">{{item.childName}}</text>
           <text class="points {{item.type === 'reward' ? 'plus' : 'minus'}}">
             {{item.type === 'reward' ? '+' : '-'}}{{item.points}}
           </text>

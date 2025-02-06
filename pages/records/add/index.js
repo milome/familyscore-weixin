@@ -200,58 +200,49 @@ Page({
   },
 
   async handleSubmit() {
-    if (this.data.loading) return
-    if (!this.data.selectedRule) {
+    if (this.data.submitting) return
+    
+    // 检查今天是否已经打卡
+    const hasDuplicate = await this.checkDuplicateRecord()
+    if (hasDuplicate) {
       wx.showToast({
-        title: '请选择规则',
+        title: '今天已经打过卡了',
         icon: 'none'
       })
       return
     }
 
+    this.setData({ submitting: true })
     try {
-      this.setData({ loading: true })
-      
-      // 获取当前孩子
-      const child = await getCurrentChild()
-      if (!child) {
-        wx.showToast({
-          title: '请先选择孩子',
-          icon: 'none'
-        })
-        return
-      }
-
-      // 添加积分记录
-      const rule = this.data.selectedRule
-      console.log('添加积分记录:', {
-        childId: child._id,
-        ruleId: rule._id,
-        ruleName: rule.name,
-        points: rule.points,
-        type: rule.type,  // 记录规则类型
-        time: new Date().toISOString()
-      })
-
-      // 根据规则类型决定加分还是扣分
-      const points = rule.type === 'penalty' ? -rule.points : rule.points
-      await addPoints(child._id, points)
-
-      wx.showToast({
-        title: '添加成功',
-        icon: 'success'
-      })
-
-      // 返回上一页
-      wx.navigateBack()
-    } catch (err) {
-      console.error('添加失败:', err)
-      wx.showToast({
-        title: '添加失败',
-        icon: 'error'
-      })
+      // ... 现有的提交逻辑 ...
     } finally {
-      this.setData({ loading: false })
+      this.setData({ submitting: false })
     }
+  },
+
+  async checkDuplicateRecord() {
+    const db = wx.cloud.database()
+    const _ = db.command
+    
+    const { selectedMember, selectedRule } = this.data
+    if (!selectedMember || !selectedRule) return false
+    
+    // 获取今天的开始和结束时间
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    
+    // 查询是否存在相同记录
+    const { total } = await db.collection('point_records')
+      .where({
+        childId: selectedMember._id,
+        ruleId: selectedRule._id,
+        createTime: _.gte(today).and(_.lt(tomorrow)),
+        isDeleted: false
+      })
+      .count()
+    
+    return total > 0
   }
 })

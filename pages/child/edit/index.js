@@ -12,13 +12,56 @@ Page({
     today: new Date().toISOString().split('T')[0] // 获取今天的日期作为日期选择器的结束日期
   },
 
-  onLoad(options) {
-    if (options.id) {
-      this.setData({ 
-        id: options.id,
-        mode: 'edit'
+  async onLoad(options) {
+    try {
+      if (options.id) {
+        this.setData({ 
+          loading: true,
+          mode: 'edit'  // 设置为编辑模式
+        })
+        
+        // 获取孩子详情
+        const child = await userService.getChildDetail(options.id)
+        
+        if (!child) {
+          wx.showToast({
+            title: '找不到孩子信息',
+            icon: 'error'
+          })
+          setTimeout(() => {
+            wx.navigateBack()
+          }, 1500)
+          return
+        }
+
+        console.log('加载孩子详情:', {
+          id: options.id,
+          mode: 'edit',
+          child
+        })
+
+        this.setData({
+          id: options.id,
+          name: child.name || '',
+          birthday: child.birthday || '',
+          gender: child.gender || 'unknown',
+          loading: false
+        })
+      } else {
+        // 新增模式
+        this.setData({ mode: 'add' })
+      }
+    } catch (err) {
+      console.error('加载孩子信息失败:', err)
+      wx.showToast({
+        title: '加载失败',
+        icon: 'error'
       })
-      this.loadChildDetail(options.id)
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 1500)
+    } finally {
+      this.setData({ loading: false })
     }
   },
 

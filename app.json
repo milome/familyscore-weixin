@@ -16,20 +16,21 @@
     "pages/scratch/create/index",
     "pages/scratch/edit/index",
     "pages/child/edit/index",
-    "pages/family/manage/index",
-    "pages/family/edit/index"
+    "pages/family/manage/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "家庭积分管理",
+    "navigationBarTitleText": "家庭积分",
     "navigationBarTextStyle": "black",
-    "navigationStyle": "custom"
+    "navigationStyle": "custom",
+    "pageOrientation": "portrait"
   },
   "tabBar": {
-    "color": "#999",
+    "custom": false,
+    "color": "#999999",
     "selectedColor": "#07c160",
-    "backgroundColor": "#fff",
+    "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [
       {
@@ -37,16 +38,8 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/records/list/index",
-        "text": "记录"
-      },
-      {
-        "pagePath": "pages/statistics/overview/index",
-        "text": "统计"
-      },
-      {
         "pagePath": "pages/settings/index",
-        "text": "设置"
+        "text": "我的"
       }
     ]
   },

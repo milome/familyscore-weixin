@@ -201,20 +201,19 @@
   font-weight: 500;
 }
 
-.record-item .points.plus {
-  color: var(--success-color);
+/* 积分显示样式 */
+.points {
+  font-weight: bold;
 }
 
-.record-item .points.minus {
-  color: var(--error-color);
+/* 正分显示为红色 */
+.plus {
+  color: #ff4d4f;  /* 红色 */
 }
 
-.record-item .desc {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 24rpx;
-  color: var(--text-disabled);
+/* 负分显示为绿色 */
+.minus {
+  color: #52c41a;  /* 绿色 */
 }
 
 /* 添加动画 */
@@ -494,4 +493,30 @@
 .empty-family .text {
   font-size: 28rpx;
   color: var(--text-secondary);
+}
+
+.record-item .points.plus {
+  color: #ff4d4f;  /* 奖励(正分)显示红色 */
+}
+
+.record-item .points.minus {
+  color: #52c41a;  /* 惩罚(负分)显示绿色 */
+}
+
+.record-item .desc {
+  display: flex;
+  justify-content: space-between;  /* 规则名称和时间戳两端对齐 */
+  align-items: center;
+  font-size: 24rpx;
+  color: var(--text-disabled);
+}
+
+.record-item .rule-name {
+  flex: 1;  /* 规则名称占据剩余空间 */
+  margin-right: 16rpx;  /* 与时间戳保持间距 */
+}
+
+.record-item .time {
+  margin-right: 4rpx;  /* 与积分对齐 */
+  white-space: nowrap;  /* 时间戳不换行 */
 } 

@@ -189,7 +189,7 @@ async function getChildPoints(childId) {
 /**
  * 增加积分
  */
-async function addPoints(childId, points) {
+async function addPoints(childId, points, extra = {}) {
   if (!childId) {
     return {
       success: false,
@@ -202,6 +202,7 @@ async function addPoints(childId, points) {
       childId,
       points,
       type: points >= 0 ? 'reward' : 'penalty',
+      extra,
       time: new Date().toISOString()
     })
 
@@ -209,7 +210,10 @@ async function addPoints(childId, points) {
     const recordData = {
       childId,
       points: Math.abs(points),
-      type: points >= 0 ? 'reward' : 'penalty',  // 根据积分正负判断类型
+      type: points >= 0 ? 'reward' : 'penalty',
+      ruleId: extra.ruleId || '',
+      ruleName: extra.ruleName || '',
+      description: extra.description || '',
       createTime: db.serverDate(),
       updateTime: db.serverDate(),
       isDeleted: false
@@ -223,6 +227,8 @@ async function addPoints(childId, points) {
       childId,
       points,
       type: recordData.type,
+      ruleName: recordData.ruleName,
+      description: recordData.description,
       recordId: result._id,
       time: new Date().toISOString()
     })
@@ -232,9 +238,10 @@ async function addPoints(childId, points) {
     }
   } catch (err) {
     console.error('处理积分失败:', {
+      error: err,
       childId,
       points,
-      error: err,
+      extra,
       time: new Date().toISOString()
     })
     throw err

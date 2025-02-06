@@ -112,15 +112,14 @@
   background: #fff;
   border-radius: 12rpx;
   overflow: hidden;
-  margin-top: 24rpx;
 }
 
 .record-item {
   display: flex;
   align-items: center;
   padding: 24rpx;
-  border-bottom: 1rpx solid var(--border-color);
-  transition: background-color 0.2s;
+  background: #fff;
+  border-bottom: 1rpx solid #eee;
 }
 
 .record-item:active {
@@ -131,48 +130,78 @@
   border-bottom: none;
 }
 
-.avatar {
+.text-avatar {
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
+  background: #1890ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 24rpx;
+  overflow: hidden;
 }
 
-.content {
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.text-avatar text {
+  color: #fff;
+  font-size: 32rpx;
+}
+
+.record-item .content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
-.title {
+.record-item .title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8rpx;
 }
 
-.name {
+.record-item .name {
   font-size: 28rpx;
   color: var(--text-primary);
 }
 
-.points {
+.record-item .points {
   font-size: 28rpx;
   font-weight: 500;
+  position: absolute;
+  right: 24rpx;
 }
 
-.points.plus {
-  color: var(--success-color);
+.record-item .points.plus {
+  color: #ff4d4f;
 }
 
-.points.minus {
-  color: var(--error-color);
+.record-item .points.minus {
+  color: #52c41a;
 }
 
-.desc {
+.record-item .desc {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 4rpx;
   font-size: 24rpx;
   color: var(--text-disabled);
+}
+
+.record-item .rule-name {
+  display: block;
+}
+
+.record-item .time {
+  display: block;
+  text-align: right;
+  margin-right: 4rpx;
 }
 
 /* 加载更多 */

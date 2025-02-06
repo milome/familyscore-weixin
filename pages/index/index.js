@@ -115,6 +115,17 @@ Page({
         
         // 加载本月统计
         await this.loadMonthStats()
+
+        // 加载最近记录
+        await this.loadRecentRecords()
+
+        console.log('首页数据加载完成:', {
+          childId: currentChild._id,
+          name: currentChild.name,
+          points,
+          recentRecords: this.data.recentRecords.length,
+          time: new Date().toISOString()
+        })
       }
     } catch (err) {
       console.error('加载失败:', err)
@@ -223,23 +234,65 @@ Page({
 
   async loadRecentRecords() {
     try {
+      if (!this.data.currentChild?._id) {
+        console.log('loadRecentRecords: 没有当前孩子')
+        return
+      }
+
+      console.log('开始加载最近记录:', {
+        childId: this.data.currentChild._id,
+        childName: this.data.currentChild.name,
+        time: new Date().toISOString()
+      })
+
       const db = wx.cloud.database()
+      const _ = db.command  // 添加 command 引用
+
+      // 构建查询条件
+      const query = {
+        childId: this.data.currentChild._id,
+        isDeleted: _.neq(true)
+      }
+
+      console.log('查询条件:', query)
+
       const res = await db.collection('point_records')
-        .where({
-          isDeleted: false
-        })
+        .where(query)
         .orderBy('createTime', 'desc')
         .limit(5)
         .get()
 
-      const records = (res.data || []).map(record => ({
-        ...record,
-        createTime: this.formatTime(record.createTime || new Date())
-      }))
+      console.log('数据库查询结果:', {
+        total: res.data?.length || 0,
+        records: res.data
+      })
+
+      const records = (res.data || []).map(record => {
+        const formatted = {
+          ...record,
+          memberName: this.data.currentChild.name,
+          ruleName: record.ruleName || '未知规则',
+          createTime: this.formatTime(record.createTime || new Date())
+        }
+        console.log('格式化记录:', formatted)
+        return formatted
+      })
+
+      console.log('最终记录列表:', {
+        childId: this.data.currentChild._id,
+        childName: this.data.currentChild.name,
+        total: records.length,
+        records,
+        time: new Date().toISOString()
+      })
 
       this.setData({ recentRecords: records })
     } catch (err) {
-      console.error('加载最近记录失败:', err)
+      console.error('加载最近记录失败:', {
+        error: err,
+        childId: this.data.currentChild?._id,
+        time: new Date().toISOString()
+      })
       this.setData({ recentRecords: [] })
     }
   },
@@ -270,7 +323,7 @@ Page({
   // 页面跳转方法
   addRecord() {
     wx.navigateTo({
-      url: '/pages/records/add/index'
+      url: '/pages/records/list/index'
     })
   },
 
@@ -362,6 +415,20 @@ Page({
     if (!this.data.currentChild) return
     wx.navigateTo({
       url: `/pages/family/manage/index?childId=${this.data.currentChild._id}`
+    })
+  },
+
+  // 跳转到编辑孩子页面
+  goToEditChild() {
+    if (!this.data.currentChild) return
+    
+    console.log('跳转到编辑孩子页面:', {
+      childId: this.data.currentChild._id,
+      childName: this.data.currentChild.name
+    })
+    
+    wx.navigateTo({
+      url: `/pages/child/edit/index?id=${this.data.currentChild._id}`
     })
   }
 })

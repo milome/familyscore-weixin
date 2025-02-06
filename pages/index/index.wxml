@@ -35,7 +35,7 @@
   <!-- 主内容 -->
   <block wx:else>
     <!-- 孩子信息 -->
-    <view class="child-info">
+    <view class="child-info" bindtap="goToEditChild">
       <view class="text-avatar">{{currentChild.name[0]}}</view>
       <view class="info">
         <text class="name">{{currentChild.name}}</text>
@@ -114,8 +114,8 @@
           <text class="text">规则管理</text>
         </view>
         <view class="action-item" bindtap="addRecord">
-          <text class="icon">➕</text>
-          <text class="text">添加记录</text>
+          <text class="icon">🌸</text>
+          <text class="text">积分记录</text>
         </view>
         <view class="action-item" bindtap="goToStats">
           <text class="icon">📊</text>

@@ -72,16 +72,44 @@ Page({
         .limit(this.data.pageSize)
         .get()
 
-      // 格式化时间
-      const records = data.map(record => ({
-        ...record,
-        createTime: this.formatTime(record.createTime)
-      }))
+      console.log('原始记录数据:', data)
+
+      // 获取所有涉及的 childId
+      const childIds = [...new Set(data.map(record => record.childId))]
+      
+      // 批量查询孩子信息
+      const { data: children } = await db.collection('children')
+        .where({
+          _id: _.in(childIds)
+        })
+        .get()
+      
+      // 创建孩子信息的映射
+      const childMap = {}
+      children.forEach(child => {
+        childMap[child._id] = child
+      })
+
+      const records = data.map(record => {
+        console.log('处理单条记录:', record)
+        const child = childMap[record.childId] || {}
+        return {
+          ...record,
+          childName: child.name || '未知',
+          childAvatar: child.avatar,
+          createTime: this.formatTime(record.createTime)
+        }
+      })
+
+      console.log('处理后的记录:', records)
 
       this.setData({
         records: [...this.data.records, ...records],
         hasMore: data.length === this.data.pageSize
       })
+
+      console.log('当前所有记录:', this.data.records)
+
     } catch (err) {
       console.error('加载记录失败:', err)
       wx.showToast({
@@ -147,5 +175,9 @@ Page({
   formatTime(date) {
     date = new Date(date)
     return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${date.getMinutes()}`
+  },
+
+  goBack() {
+    wx.navigateBack()
   }
 }) 
