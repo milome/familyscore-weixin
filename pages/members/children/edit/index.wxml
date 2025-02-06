@@ -1,0 +1,86 @@
+<!--pages/members/children/edit/index.wxml-->
+<view class="container">
+  <form bindsubmit="handleSubmit">
+    <!-- 头像上传 -->
+    <view class="avatar-upload" bindtap="chooseAvatar">
+      <image 
+        class="avatar-image" 
+        src="{{form.avatarUrl || '/images/default-avatar.png'}}"
+      />
+      <text class="avatar-tip">点击更换头像</text>
+    </view>
+
+    <!-- 表单内容 -->
+    <view class="form-group">
+      <!-- 姓名 -->
+      <view class="form-item">
+        <text class="form-label">姓名</text>
+        <input 
+          class="form-input"
+          name="name"
+          value="{{form.name}}"
+          placeholder="请输入宝贝姓名"
+        />
+      </view>
+
+      <!-- 性别 -->
+      <view class="form-item">
+        <text class="form-label">性别</text>
+        <view class="gender-group">
+          <view 
+            class="gender-item {{form.gender === 'male' ? 'active' : ''}}"
+            data-gender="male"
+            bindtap="onGenderSelect"
+          >
+            <text class="gender-icon">👦</text>
+            <text class="gender-text">男孩</text>
+          </view>
+          <view 
+            class="gender-item {{form.gender === 'female' ? 'active' : ''}}"
+            data-gender="female"
+            bindtap="onGenderSelect"
+          >
+            <text class="gender-icon">👧</text>
+            <text class="gender-text">女孩</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 备注 -->
+      <view class="form-item">
+        <text class="form-label">备注</text>
+        <input 
+          class="form-input"
+          name="remark"
+          value="{{form.remark}}"
+          placeholder="选填"
+        />
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="footer">
+      <button 
+        class="submit-btn"
+        type="primary"
+        form-type="submit"
+        loading="{{submitting}}"
+      >保存</button>
+
+      <button 
+        wx:if="{{id}}"
+        class="delete-btn"
+        bindtap="showDeleteConfirm"
+      >删除</button>
+    </view>
+  </form>
+</view>
+
+<!-- 删除确认框 -->
+<modal
+  visible="{{showDeleteModal}}"
+  title="删除确认"
+  content="确定要删除该宝贝吗？删除后无法恢复。"
+  bind:confirm="handleDelete"
+  bind:cancel="hideDeleteModal"
+/>

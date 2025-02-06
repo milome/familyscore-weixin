@@ -1,3 +1,7 @@
 {
-  "usingComponents": {}
+  "navigationBarTitleText": "设置",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "list-item": "/components/list-item/list-item"
+  }
 }

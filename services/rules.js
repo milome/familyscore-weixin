@@ -1,30 +1,23 @@
 const db = wx.cloud.database()
 const collection = db.collection('point_rules')
+const _ = db.command
 
 /**
  * 获取规则列表
  */
-async function getRuleList(keyword = '') {
-  console.log('Getting rules with query:', { isDeleted: false, keyword })
-  const query = {
-    isDeleted: false
-  }
-  
-  if (keyword) {
-    query.name = db.RegExp({
-      regexp: keyword,
-      options: 'i'
-    })
-  }
-
+async function getRuleList() {
   try {
     const { data } = await collection
-      .where(query)
+      .where({
+        isDeleted: _.neq(true)
+      })
       .orderBy('createTime', 'desc')
       .get()
     
-    console.log('Got rules:', data)
-    return data
+    return {
+      success: true,
+      data
+    }
   } catch (err) {
     console.error('获取规则列表失败:', err)
     throw err
@@ -34,25 +27,21 @@ async function getRuleList(keyword = '') {
 /**
  * 添加规则
  */
-async function addRule(rule) {
-  console.log('Adding rule:', rule)
+async function addRule(data) {
   try {
-    const data = {
-      name: rule.name,
-      type: rule.type,
-      points: parseInt(rule.points),
-      createTime: db.serverDate(),
-      updateTime: db.serverDate(),
-      isDeleted: false,
-      _openid: '', // 由云数据库自动填充
-      status: 'active'
-    }
-    console.log('Adding data:', data)
-    const res = await collection.add({ data })
-    console.log('Added rule with id:', res._id)
+    const { _id } = await collection.add({
+      data: {
+        ...data,
+        createTime: db.serverDate(),
+        updateTime: db.serverDate(),
+        isDeleted: false,
+        status: 'active'
+      }
+    })
+
     return {
-      _id: res._id,
-      ...data
+      success: true,
+      data: { _id }
     }
   } catch (err) {
     console.error('添加规则失败:', err)
@@ -69,13 +58,15 @@ async function updateRule(id, data) {
       ...data,
       updateTime: db.serverDate()
     }
-    delete updateData._openid  // 防止修改 _openid
+    delete updateData._openid
     console.log('Updating rule:', id, updateData)
-    const res = await collection.doc(id).update({
+    await collection.doc(id).update({
       data: updateData
     })
-    console.log('Updated rule:', res)
-    return res
+    console.log('Updated rule:')
+    return {
+      success: true
+    }
   } catch (err) {
     console.error('更新规则失败:', err)
     throw err
@@ -85,17 +76,18 @@ async function updateRule(id, data) {
 /**
  * 删除规则
  */
-async function deleteRule(id, physical = false) {
+async function deleteRule(id) {
   try {
-    if (physical) {
-      return await collection.doc(id).remove()
-    }
-    return await collection.doc(id).update({
+    await collection.doc(id).update({
       data: {
         isDeleted: true,
         deleteTime: db.serverDate()
       }
     })
+
+    return {
+      success: true
+    }
   } catch (err) {
     console.error('删除规则失败:', err)
     throw err

@@ -1,57 +1,58 @@
 <view class="container">
-  <!-- 顶部操作栏 -->
+  <!-- 搜索和添加 -->
   <view class="header">
-    <search placeholder="搜索成员" bindsearch="onSearch" />
-    <button 
-      class="add-btn" 
-      bindtap="addMember"
-    >
+    <search placeholder="搜索宝贝" bindsearch="onSearch" />
+    <button class="add-btn" bindtap="addChild">
       <text class="icon">+</text>
-      <text>添加成员</text>
+      <text>添加宝贝</text>
     </button>
   </view>
 
-  <!-- 成员列表 -->
+  <!-- 我的宝贝列表 -->
   <view class="member-list">
-    <view class="empty" wx:if="{{isEmpty}}">
-      <text class="icon">👥</text>
-      <text class="text">暂无成员，点击上方按钮添加</text>
+    <view class="loading" wx:if="{{loading}}">
+      <text>加载中...</text>
     </view>
-    
+    <view class="empty" wx:elif="{{children.length === 0}}">
+      <text>还没有添加宝贝，点击上方按钮添加</text>
+    </view>
     <view 
-      class="member-item" 
-      wx:for="{{members}}" 
+      class="member-item"
+      wx:for="{{children}}"
       wx:key="_id"
-      bindtap="editMember"
-      data-id="{{item._id}}"
     >
+      <image class="avatar" src="{{item.avatar || '/images/default-avatar.png'}}" />
       <view class="content">
-        <image class="avatar" src="{{item.avatar || '/images/default-avatar.png'}}" />
         <text class="name">{{item.name}}</text>
-        <text class="points">{{item.points || 0}}分</text>
+        <text class="points {{item.points >= 0 ? 'positive' : 'negative'}}">
+          {{item.points || 0}}分
+        </text>
       </view>
       <view class="actions">
         <button 
-          class="action-btn" 
-          hover-class="btn-hover"
-          catchtap="editMember"
+          class="action-btn"
+          catchtap="editChild"
           data-id="{{item._id}}"
-        >✏️</button>
+        >
+          <text class="icon">✏️</text>
+        </button>
         <button 
-          class="action-btn" 
-          hover-class="btn-hover"
+          class="action-btn"
           catchtap="showDeleteConfirm"
           data-id="{{item._id}}"
-        >🗑️</button>
+        >
+          <text class="icon">🗑️</text>
+        </button>
       </view>
     </view>
   </view>
 </view>
 
+<!-- 删除确认框 -->
 <modal
   visible="{{showDeleteModal}}"
   title="删除确认"
-  content="确定要删除该成员吗？删除后无法恢复。"
+  content="确定要删除该宝贝吗？删除后无法恢复。"
   bind:confirm="confirmDelete"
   bind:cancel="hideDeleteModal"
-/> 
+/>

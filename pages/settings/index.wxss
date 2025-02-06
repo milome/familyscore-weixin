@@ -32,5 +32,11 @@
 }
 
 .settings-list {
+  padding: 24rpx;
+}
+
+.settings-group {
   background: #fff;
+  border-radius: 12rpx;
+  overflow: hidden;
 }

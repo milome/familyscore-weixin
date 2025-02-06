@@ -1,44 +1,45 @@
 const db = wx.cloud.database()
 const collection = db.collection('family_members')
+const _ = db.command
 
 /**
  * 获取成员列表
- * @param {string} keyword 搜索关键词
- * @returns {Promise<Array>}
  */
-async function getMemberList(keyword = '') {
-  const query = {
-    isDeleted: false
-  }
-  
-  if (keyword) {
-    query.name = db.RegExp({
-      regexp: keyword,
-      options: 'i'
-    })
-  }
-
+async function getMemberList(type = 'all') {
   try {
+    const openid = wx.getStorageSync('openid')
+    let query = { isDeleted: false }
+    
+    // 根据类型筛选
+    if (type === 'children') {
+      query = {
+        isDeleted: false,
+        role: 'child',
+        createdBy: openid  // 只显示当前用户创建的孩子
+      }
+    } else if (type === 'family') {
+      query = {
+        isDeleted: false,
+        role: db.command.in(['father', 'mother']),
+        _openid: openid  // 只显示当前用户的家人身份
+      }
+    }
+
     const { data } = await collection
       .where(query)
       .orderBy('createTime', 'desc')
       .get()
-    
-    console.log('成员列表数据:', data)
 
-    // 处理成员关系
-    const memberMap = data.reduce((map, member) => {
-      map[member._id] = member
-      return map
-    }, {})
-
-    return data.map(member => ({
-      ...member,
-      relations: (member.relations || []).map(rel => ({
-        ...rel,
-        memberName: memberMap[rel.memberId]?.name || '未知成员'
+    // 如果是获取孩子列表，需要附加积分信息
+    if (type === 'children') {
+      const pointsData = await getChildrenPoints(data.map(child => child._id))
+      return data.map(child => ({
+        ...child,
+        points: pointsData[child._id] || 0
       }))
-    }))
+    }
+
+    return data
   } catch (err) {
     console.error('获取成员列表失败:', err)
     throw err
@@ -46,27 +47,108 @@ async function getMemberList(keyword = '') {
 }
 
 /**
- * 添加成员
- * @param {Object} member 成员信息
- * @returns {Promise<Object>}
+ * 获取孩子们的积分
  */
-async function addMember(member) {
+async function getChildrenPoints(childrenIds) {
   try {
-    const data = {
-      name: member.name,
-      avatar: member.avatar || '/images/default-avatar.png',
-      role: member.role || 'child', // 角色: father-爸爸, mother-妈妈, child-孩子
-      gender: member.gender || 'male', // 性别: male-男, female-女
-      relations: member.relations || [], // 成员关系: [{memberId, relation}] relation: parent-家长, child-子女
-      points: 0,
-      createTime: db.serverDate(),
-      updateTime: db.serverDate(),
-      isDeleted: false
+    const db = wx.cloud.database()
+    const $ = db.command.aggregate
+    const { list } = await db.collection('point_records')
+      .aggregate()
+      .match({
+        isDeleted: false,
+        memberId: db.command.in(childrenIds)
+      })
+      .group({
+        _id: '$memberId',
+        totalPoints: $.sum($.cond({
+          if: $.eq(['$type', 'reward']),
+          then: '$points',
+          else: $.multiply(['$points', -1])
+        }))
+      })
+      .end()
+    
+    // 转换为 {memberId: points} 格式
+    return list.reduce((acc, cur) => {
+      acc[cur._id] = cur.totalPoints
+      return acc
+    }, {})
+  } catch (err) {
+    console.error('获取孩子积分失败:', err)
+    return {}
+  }
+}
+
+/**
+ * 生成邀请码
+ */
+async function createInvite() {
+  try {
+    const { result } = await wx.cloud.callFunction({
+      name: 'createInvite'
+    })
+    return result
+  } catch (err) {
+    console.error('生成邀请码失败:', err)
+    throw err
+  }
+}
+
+/**
+ * 通过邀请码加入家庭
+ */
+async function joinFamily(code) {
+  try {
+    const { result } = await wx.cloud.callFunction({
+      name: 'joinFamily',
+      data: { code }
+    })
+    return result
+  } catch (err) {
+    console.error('加入家庭失败:', err)
+    throw err
+  }
+}
+
+/**
+ * 添加成员
+ * @param {string} type 成员类型 'family'|'child'
+ * @param {object} data 成员数据
+ */
+async function addMember(type, data) {
+  try {
+    // 检查是否已存在
+    const { total } = await db.collection(`${type}_members`)
+      .where({
+        name: data.name,
+        isDeleted: _.neq(true)
+      })
+      .count()
+
+    if (total > 0) {
+      return {
+        success: false,
+        error: 'MEMBER_EXISTS',
+        message: '该成员已存在'
+      }
     }
-    const res = await collection.add({ data })
+
+    // 添加成员
+    const { _id } = await db.collection(`${type}_members`).add({
+      data: {
+        ...data,
+        createTime: db.serverDate(),
+        updateTime: db.serverDate(),
+        isDeleted: false
+      }
+    })
+
     return {
-      _id: res._id,
-      ...data
+      success: true,
+      data: {
+        _id
+      }
     }
   } catch (err) {
     console.error('添加成员失败:', err)
@@ -76,23 +158,24 @@ async function addMember(member) {
 
 /**
  * 更新成员
+ * @param {string} type 成员类型 'family'|'child'
  * @param {string} id 成员ID
- * @param {Object} data 更新数据
- * @returns {Promise<Object>}
+ * @param {object} data 更新数据
  */
-async function updateMember(id, data) {
+async function updateMember(type, id, data) {
   try {
-    const updateData = {
-      ...data,
-      // 防止直接修改这些字段
-      points: undefined,
-      createTime: undefined,
-      isDeleted: undefined,
-      updateTime: db.serverDate()
+    await db.collection(`${type}_members`)
+      .doc(id)
+      .update({
+        data: {
+          ...data,
+          updateTime: db.serverDate()
+        }
+      })
+
+    return {
+      success: true
     }
-    return await collection.doc(id).update({
-      data: updateData
-    })
   } catch (err) {
     console.error('更新成员失败:', err)
     throw err
@@ -119,30 +202,19 @@ async function deleteMember(id, physical = false) {
 
 /**
  * 获取成员详情
+ * @param {string} type 成员类型 'family'|'child'
+ * @param {string} id 成员ID
  */
-async function getMember(id) {
+async function getMemberDetail(type, id) {
   try {
-    const { data } = await collection.doc(id).get()
-    if (data.relations) {
-      // 获取关联成员信息
-      const memberIds = data.relations.map(rel => rel.memberId)
-      const { data: relatedMembers } = await collection
-        .where({
-          _id: db.command.in(memberIds)
-        })
-        .get()
+    const { data } = await db.collection(`${type}_members`)
+      .doc(id)
+      .get()
 
-      const memberMap = relatedMembers.reduce((map, member) => {
-        map[member._id] = member
-        return map
-      }, {})
-
-      data.relations = data.relations.map(rel => ({
-        ...rel,
-        memberName: memberMap[rel.memberId]?.name || '未知成员'
-      }))
+    return {
+      success: true,
+      data
     }
-    return data
   } catch (err) {
     console.error('获取成员详情失败:', err)
     throw err
@@ -184,9 +256,11 @@ async function getMyChildren() {
 
 module.exports = {
   getMemberList,
+  createInvite,
+  joinFamily,
   addMember,
   updateMember,
   deleteMember,
-  getMember,
+  getMemberDetail,
   getMyChildren
 } 

@@ -3,19 +3,28 @@
     "pages/login/index",
     "pages/index/index",
     "pages/members/list/index",
-    "pages/members/edit/index",
+    "pages/members/children/edit/index",
+    "pages/members/family/join/index",
     "pages/rules/list/index",
     "pages/rules/edit/index",
     "pages/records/list/index",
     "pages/records/add/index",
     "pages/statistics/overview/index",
-    "pages/settings/index"
+    "pages/settings/index",
+    "pages/scratch/list/index",
+    "pages/scratch/play/index",
+    "pages/scratch/create/index",
+    "pages/scratch/edit/index",
+    "pages/child/edit/index",
+    "pages/family/manage/index",
+    "pages/family/edit/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "家庭积分管理",
-    "navigationBarTextStyle": "black"
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
   },
   "tabBar": {
     "color": "#999",
@@ -50,5 +59,6 @@
     "filter-panel": "/components/filter-panel/filter-panel",
     "card": "/components/card/card",
     "modal": "/components/modal/modal"
-  }
+  },
+  "sitemapLocation": "sitemap.json"
 } 

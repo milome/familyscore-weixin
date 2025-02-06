@@ -1,0 +1,78 @@
+<nav-bar title="{{mode === 'add' ? '添加宝贝' : '编辑宝贝'}}">
+  <view slot="left">
+    <text class="back-btn" bindtap="goBack">返回</text>
+  </view>
+  <view slot="right">
+    <navigator url="/pages/index/index" open-type="switchTab" hover-class="none">
+      <text class="nav-btn">返回首页</text>
+    </navigator>
+  </view>
+</nav-bar>
+
+<view class="container">
+  <view class="form">
+    <!-- 头像上传 -->
+    <view class="avatar-upload" bindtap="chooseAvatar">
+      <image class="avatar" src="{{avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+      <text class="tip">点击更换头像</text>
+    </view>
+
+    <!-- 姓名输入 -->
+    <view class="form-item">
+      <text class="label">姓名</text>
+      <input 
+        class="input" 
+        value="{{name}}"
+        placeholder="请输入宝贝姓名"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <!-- 生日选择 -->
+    <view class="form-item">
+      <text class="label">生日</text>
+      <picker 
+        mode="date" 
+        value="{{birthday}}"
+        start="2000-01-01"
+        end="{{today}}"
+        bindchange="onBirthdayChange"
+      >
+        <view class="picker {{birthday ? '' : 'placeholder'}}">
+          {{birthday || '请选择生日'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 性别选择 -->
+    <view class="form-item">
+      <text class="label">性别</text>
+      <view class="gender-select">
+        <view 
+          class="gender-option {{gender === 'male' ? 'active' : ''}}"
+          data-gender="male"
+          bindtap="onGenderSelect"
+        >
+          <text class="icon">👦</text>
+          <text class="text">男孩</text>
+        </view>
+        <view 
+          class="gender-option {{gender === 'female' ? 'active' : ''}}"
+          data-gender="female"
+          bindtap="onGenderSelect"
+        >
+          <text class="icon">👧</text>
+          <text class="text">女孩</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <button 
+    class="save-btn" 
+    type="primary" 
+    loading="{{loading}}"
+    bindtap="onSave"
+  >保存</button>
+</view> 

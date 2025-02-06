@@ -1,4 +1,8 @@
+// const { checkAuth } = require('../../utils/auth')  // 注释掉权限检查
 const app = getApp()
+const scratchService = require('../../services/scratch')  // 添加这行
+const userService = require('../../services/user')
+const { getCurrentChild, getChildPoints } = require('../../services/user')
 
 Page({
   data: {
@@ -7,106 +11,110 @@ Page({
       avatarUrl: '/images/default-avatar.png'
     },
     monthStats: {
-      total: 128,
-      totalPoints: 520,
-      rewards: 88,
-      penalties: 40
+      total: 0,
+      totalPoints: 0,
+      rewards: 0,
+      penalties: 0
     },
-    recentRecords: [
-      {
-        _id: '1',
-        memberName: '小明',
-        memberAvatar: '/images/default-avatar.png',
-        type: 'reward',
-        points: 10,
-        ruleName: '按时完成作业',
-        createTime: '3月15日 14:30'
-      },
-      {
-        _id: '2',
-        memberName: '小红',
-        memberAvatar: '/images/default-avatar.png',
-        type: 'penalty',
-        points: 5,
-        ruleName: '玩手机超时',
-        createTime: '3月15日 12:20'
-      }
-    ],
-    loading: false,    // 骨架屏加载状态
-    refreshing: false, // 下拉刷新状态
-    children: [], // 当前用户的孩子列表
+    recentRecords: [],
+    loading: true,
+    refreshing: false,
+    children: [],
     overview: {
       totalPoints: 0,
       rewardCount: 0,
       penaltyCount: 0,
       records: []
-    }
+    },
+    isParent: true,
+    isChild: false,
+    currentChild: null,
+    childList: [],
+    familyList: []
   },
 
-  onLoad() {
-    this.loadChildren()
-    this.loadOverview()
-  },
-
-  async loadChildren() {
+  async onLoad() {
     try {
-      const { getMyChildren } = require('../../services/members')
-      const children = await getMyChildren()
-      this.setData({ children })
-    } catch (err) {
-      console.error('加载孩子列表失败:', err)
-    }
-  },
-
-  async loadOverview() {
-    if (this.data.loading) return
-    this.setData({ loading: true })
-
-    try {
-      if (!this.data.children.length) {
-        this.setData({
-          overview: {
-            totalPoints: 0,
-            rewardCount: 0,
-            penaltyCount: 0,
-            records: []
-          }
+      // 获取当前孩子
+      const child = await getCurrentChild()
+      if (child) {
+        const { points } = await getChildPoints(child._id)
+        console.log('首页当前孩子信息:', {
+          id: child._id,
+          name: child.name,
+          points
         })
-        return
       }
-
-      const childrenIds = this.data.children.map(child => child._id)
-      const now = new Date()
-      const startTime = new Date(now.getFullYear(), now.getMonth(), 1) // 本月1号
-      const endTime = new Date(now.getFullYear(), now.getMonth() + 1, 0) // 本月最后一天
-
-      const { getChildrenRecords } = require('../../services/records')
-      const records = await getChildrenRecords(childrenIds, {
-        startTime,
-        endTime
-      })
-
-      // 计算统计数据
-      const overview = {
-        totalPoints: 0,
-        rewardCount: 0,
-        penaltyCount: 0,
-        records: records.slice(0, 5) // 只显示最近5条记录
-      }
-
-      records.forEach(record => {
-        if (record.type === 'reward') {
-          overview.totalPoints += record.points
-          overview.rewardCount++
-        } else {
-          overview.totalPoints -= record.points
-          overview.penaltyCount++
-        }
-      })
-
-      this.setData({ overview })
     } catch (err) {
-      console.error('加载概览数据失败:', err)
+      console.error('获取孩子信息失败:', err)
+    }
+
+    await this.loadData()
+  },
+
+  async onShow() {
+    // 每次显示页面时重新加载所有数据
+    try {
+      // 先清空当前积分，避免显示旧数据
+      if (this.data.currentChild) {
+        this.setData({
+          'currentChild.points': 0
+        })
+      }
+      
+      // 使用 loadData 统一加载最新数据
+      await this.loadData()
+      
+      // 添加日志
+      if (this.data.currentChild) {
+        console.log('首页 onShow 后的积分:', {
+          childId: this.data.currentChild._id,
+          name: this.data.currentChild.name,
+          points: this.data.currentChild.points
+        })
+      }
+    } catch (err) {
+      console.error('onShow 刷新数据失败:', err)
+    }
+  },
+
+  async loadData() {
+    try {
+      this.setData({ loading: true })
+      
+      // 获取当前孩子
+      const currentChild = await getCurrentChild()
+      
+      if (currentChild) {
+        // 获取最新积分
+        const { points } = await getChildPoints(currentChild._id)
+        console.log('首页 loadData 获取积分:', { 
+          childId: currentChild._id, 
+          name: currentChild.name,
+          points 
+        })
+        
+        // 获取孩子列表
+        const { data: childList } = await userService.getChildList()
+        
+        this.setData({
+          currentChild: {
+            ...currentChild,
+            points  // 使用从 point_records 获取的最新积分
+          },
+          childList: childList.map(child => {
+            if (child._id === currentChild._id) {
+              return { ...child, points }  // 更新列表中当前孩子的积分
+            }
+            return child
+          })
+        })
+        
+        // 加载家人列表
+        await this.loadFamilyList(currentChild._id)
+      }
+    } catch (err) {
+      console.error('加载失败:', err)
       wx.showToast({
         title: '加载失败',
         icon: 'error'
@@ -116,99 +124,132 @@ Page({
     }
   },
 
+  // 加载家人列表
+  async loadFamilyList(childId) {
+    try {
+      const { data } = await userService.getChildFamily(childId)
+      this.setData({ familyList: data })
+    } catch (err) {
+      console.error('加载家人列表失败:', err)
+      this.setData({ familyList: [] })
+    }
+  },
+
+  // 切换孩子后重新加载
+  async onChildSwitch() {
+    await this.loadData()
+  },
+
+  loadUserInfo() {
+    try {
+      const userInfo = wx.getStorageSync('userInfo') || {
+        nickName: '测试用户',
+        avatarUrl: '/images/default-avatar.png'
+      }
+      this.setData({ userInfo })
+    } catch (err) {
+      console.error('加载用户信息失败:', err)
+    }
+  },
+
+  async loadChildren() {
+    try {
+      const { getMemberList } = require('../../services/members')
+      const children = await getMemberList('children') || []
+      this.setData({ children })
+    } catch (err) {
+      console.error('加载孩子列表失败:', err)
+      this.setData({ children: [] })
+    }
+  },
+
+  async loadMonthStats() {
+    try {
+      const db = wx.cloud.database()
+      const _ = db.command
+      const now = new Date()
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+      const res = await db.collection('point_records')
+        .where({
+          isDeleted: false,
+          createTime: _.gte(firstDay).and(_.lte(lastDay))
+        })
+        .get()
+
+      const stats = {
+        total: res.data.length,
+        totalPoints: 0,
+        rewards: 0,
+        penalties: 0
+      }
+
+      res.data.forEach(record => {
+        if (record.points) {
+          stats.totalPoints += record.points
+          if (record.type === 'reward') {
+            stats.rewards++
+          } else if (record.type === 'penalty') {
+            stats.penalties++
+          }
+        }
+      })
+
+      this.setData({ monthStats: stats })
+    } catch (err) {
+      console.error('加载月度统计失败:', err)
+      // 保持默认值
+    }
+  },
+
+  async loadRecentRecords() {
+    try {
+      const db = wx.cloud.database()
+      const res = await db.collection('point_records')
+        .where({
+          isDeleted: false
+        })
+        .orderBy('createTime', 'desc')
+        .limit(5)
+        .get()
+
+      const records = (res.data || []).map(record => ({
+        ...record,
+        createTime: this.formatTime(record.createTime || new Date())
+      }))
+
+      this.setData({ recentRecords: records })
+    } catch (err) {
+      console.error('加载最近记录失败:', err)
+      this.setData({ recentRecords: [] })
+    }
+  },
+
   async onRefresh() {
     if (this.data.refreshing) return
     this.setData({ refreshing: true })
     try {
-      await this.loadOverview()
+      await Promise.all([
+        this.loadMonthStats().catch(() => {}),
+        this.loadRecentRecords().catch(() => {})
+      ])
     } finally {
       this.setData({ refreshing: false })
     }
   },
 
-  // 卡片切换动画
-  switchCard(selector, direction = 'next') {
-    const card = this.selectComponent(selector)
-    if (!card) return
-
-    card.setData({ className: 'leaving' })
-    setTimeout(() => {
-      // 更新数据
-      card.setData({ className: 'entering' })
-      setTimeout(() => {
-        card.setData({ className: '' })
-      }, 300)
-    }, 300)
-  },
-
-  onShow() {
-    // 每次显示页面时刷新数据
-    this.loadMonthStats()
-    this.loadRecentRecords()
-  },
-
-  loadUserInfo() {
-    const userInfo = wx.getStorageSync('userInfo')
-    this.setData({ userInfo })
-  },
-
-  async loadMonthStats() {
-    const db = wx.cloud.database()
-    const _ = db.command
-    const now = new Date()
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-
-    const res = await db.collection('point_records')
-      .where({
-        isDeleted: false,
-        createTime: _.gte(firstDay).and(_.lte(lastDay))
-      })
-      .get()
-
-    const stats = {
-      total: res.data.length,
-      totalPoints: 0,
-      rewards: 0,
-      penalties: 0
-    }
-
-    res.data.forEach(record => {
-      stats.totalPoints += record.points
-      if (record.type === 'reward') {
-        stats.rewards++
-      } else if (record.type === 'penalty') {
-        stats.penalties++
-      }
-    })
-
-    this.setData({ monthStats: stats })
-  },
-
-  async loadRecentRecords() {
-    const db = wx.cloud.database()
-    const res = await db.collection('point_records')
-      .where({
-        isDeleted: false
-      })
-      .orderBy('createTime', 'desc')
-      .limit(5)
-      .get()
-
-    // 格式化时间
-    const records = res.data.map(record => ({
-      ...record,
-      createTime: this.formatTime(record.createTime)
-    }))
-
-    this.setData({ recentRecords: records })
-  },
-
   formatTime(date) {
-    date = new Date(date)
-    return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${date.getMinutes()}`
+    try {
+      date = new Date(date)
+      return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
+    } catch (err) {
+      console.error('时间格式化失败:', err)
+      return '未知时间'
+    }
   },
 
+  // 页面跳转方法
   addRecord() {
     wx.navigateTo({
       url: '/pages/records/add/index'
@@ -216,26 +257,93 @@ Page({
   },
 
   goToMembers() {
-    wx.navigateTo({
-      url: '/pages/members/list/index'
-    })
+    wx.navigateTo({ url: '/pages/members/list/index?tab=children' })
   },
 
   goToRules() {
-    wx.navigateTo({
-      url: '/pages/rules/list/index'
-    })
+    wx.navigateTo({ url: '/pages/rules/list/index' })
   },
 
   goToStats() {
-    wx.navigateTo({
-      url: '/pages/statistics/overview/index'
-    })
+    wx.navigateTo({ url: '/pages/statistics/overview/index' })
   },
 
   goToRecords() {
+    wx.navigateTo({ url: '/pages/records/list/index' })
+  },
+
+  playScratchGame() {
+    wx.showModal({
+      title: '兑换积分',
+      editable: true,
+      placeholderText: '请输入要兑换的积分数量',
+      success: async (res) => {
+        if (res.confirm) {
+          const points = parseInt(res.content)
+          if (isNaN(points) || points <= 0) {
+            wx.showToast({
+              title: '请输入有效积分',
+              icon: 'none'
+            })
+            return
+          }
+
+          try {
+            // 获取匹配的刮刮卡
+            const { data: card } = await scratchService.getRandomCard(points)
+            if (!card) {
+              wx.showToast({
+                title: '暂无匹配的刮刮卡',
+                icon: 'none'
+              })
+              return
+            }
+
+            // 跳转到游戏页面
+            wx.navigateTo({
+              url: `/pages/scratch/play/index?id=${card._id}`
+            })
+          } catch (err) {
+            console.error('获取刮刮卡失败:', err)
+            wx.showToast({
+              title: '获取刮刮卡失败',
+              icon: 'error'
+            })
+          }
+        }
+      }
+    })
+  },
+
+  // 添加跳转方法
+  goToAddChild() {
     wx.navigateTo({
-      url: '/pages/records/list/index'
+      url: '/pages/child/edit/index'
+    })
+  },
+
+  // 添加家人
+  addFamilyMember() {
+    if (!this.data.currentChild) return
+    wx.navigateTo({
+      url: `/pages/family/edit/index?childId=${this.data.currentChild._id}`
+    })
+  },
+
+  // 编辑家人
+  editFamily(e) {
+    const { id } = e.currentTarget.dataset
+    if (!this.data.currentChild) return
+    wx.navigateTo({
+      url: `/pages/family/edit/index?childId=${this.data.currentChild._id}&id=${id}`
+    })
+  },
+
+  // 跳转到家人管理页面
+  goToFamilyManage() {
+    if (!this.data.currentChild) return
+    wx.navigateTo({
+      url: `/pages/family/manage/index?childId=${this.data.currentChild._id}`
     })
   }
-}) 
+})

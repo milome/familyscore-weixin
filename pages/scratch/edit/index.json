@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "编辑刮刮卡",
+  "usingComponents": {
+    "modal": "/components/modal/modal"
+  }
+}

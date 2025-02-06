@@ -5,7 +5,9 @@ Page({
    * 页面的初始数据
    */
   data: {
-    userInfo: null
+    userInfo: null,
+    isParent: true,  // 临时设置为家长角色
+    isChild: false
   },
 
   /**
@@ -77,7 +79,7 @@ Page({
   showAbout() {
     wx.showModal({
       title: '关于我们',
-      content: '家庭积分管理小程序 v1.0.0\n\n一个帮助家庭成员互相激励、共同进步的工具。',
+      content: '家庭积分管理小程序，帮助家长更好地管理孩子的积分奖励。',
       showCancel: false
     })
   },
@@ -107,6 +109,31 @@ Page({
           })
         }
       }
+    })
+  },
+
+  goToFamily() {
+    wx.navigateTo({
+      url: '/pages/members/list/index?tab=family'
+    })
+  },
+
+  goToMembers() {
+    wx.navigateTo({
+      url: '/pages/members/list/index'
+    })
+  },
+
+  goToRules() {
+    wx.navigateTo({
+      url: '/pages/rules/list/index'
+    })
+  },
+
+  // 添加刮刮卡管理导航
+  goToScratchManage() {
+    wx.navigateTo({
+      url: '/pages/scratch/list/index?mode=manage'
     })
   }
 })

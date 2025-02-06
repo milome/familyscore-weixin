@@ -1,0 +1,84 @@
+<nav-bar title="刮刮卡" />
+
+<view class="container">
+  <!-- 添加孩子信息显示 -->
+  <view class="child-info" wx:if="{{currentChild}}">
+    <image class="avatar" src="{{currentChild.avatar}}" mode="aspectFill"></image>
+    <view class="info">
+      <text class="name">{{currentChild.name}}</text>
+      <text class="points">剩余积分: {{childPoints}}</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{!loading}}">
+    <!-- 刮开前只显示神秘提示 -->
+    <view class="card-content" wx:if="{{revealed}}">
+      <view class="title">{{card.title}}</view>
+      <view class="desc">{{card.description}}</view>
+      <view class="points">{{card.points}}积分</view>
+    </view>
+    <view class="card-content" wx:else>
+      <view class="title">神秘奖励</view>
+      <view class="desc">刮开看看是什么吧</view>
+    </view>
+
+    <view class="scratch-area">
+      <view class="result {{hasWon ? 'win' : 'lose'}} {{revealed ? 'show' : ''}}">
+        <text class="icon">{{hasWon ? '🎉' : '💔'}}</text>
+        <text class="text">{{hasWon ? '恭喜获得' : '很遗憾'}}</text>
+        <text class="reward" wx:if="{{hasWon}}">{{card.title}}</text>
+      </view>
+      
+      <cover-view 
+        class="scratch-mask {{isScratching ? 'scratching' : ''}}" 
+        wx:if="{{!revealed}}"
+        catch:tap="startScratch"
+      >
+        <cover-view class="mask-text">点击刮开</cover-view>
+      </cover-view>
+    </view>
+
+    <button 
+      class="claim-btn"
+      type="primary"
+      loading="{{claiming}}"
+      disabled="{{!hasWon || !revealed}}"
+      bindtap="claimPrize"
+    >领取奖励</button>
+  </view>
+</view>
+
+<!-- 积分领取成功弹窗 -->
+<modal
+  visible="{{showPointsModal}}"
+  title="领取成功"
+  content="积分已发放到您的账户"
+  confirmText="查看任务"
+  cancelText="关闭"
+  bind:confirm="goToTasks"
+  bind:cancel="hidePointsModal"
+/>
+
+<!-- 兑换积分弹窗 -->
+<modal 
+  show="{{showExchangeModal}}" 
+  title="兑换积分"
+  bindcancel="hideExchangeModal"
+  bindconfirm="handleExchange"
+>
+  <view class="exchange-modal">
+    <view class="child-info">
+      <text class="name">{{currentChild.name}}</text>
+    </view>
+    <view class="available-points">
+      可用积分：<text class="points">{{childPoints}}</text>
+    </view>
+    <input
+      class="exchange-input"
+      type="number"
+      placeholder="请输入要兑换的积分数量"
+      value="{{exchangePoints}}"
+      bindinput="onExchangeInput"
+    />
+  </view>
+</modal> 

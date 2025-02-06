@@ -8,5 +8,11 @@ Component({
       type: Boolean,
       value: false
     }
+  },
+
+  methods: {
+    onClick() {
+      this.triggerEvent('tap')
+    }
   }
 }) 

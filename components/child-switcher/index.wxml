@@ -1,0 +1,49 @@
+<!-- 切换按钮 -->
+<view class="switcher" bindtap="openSwitcher">
+  <image 
+    class="avatar" 
+    src="{{currentChild.avatar || '/images/default-avatar.png'}}" 
+    mode="aspectFill"
+  />
+  <text class="name">{{currentChild.name}}</text>
+  <text class="icon">▼</text>
+</view>
+
+<!-- 抽屉 -->
+<drawer 
+  visible="{{showDrawer}}" 
+  position="left"
+  bind:close="closeDrawer"
+>
+  <view class="drawer-content">
+    <view class="header">
+      <text class="title">切换孩子</text>
+      <navigator 
+        class="add-btn"
+        url="/pages/child/edit/index"
+        hover-class="none"
+      >添加</navigator>
+    </view>
+
+    <view class="child-list">
+      <view 
+        class="child-item {{item._id === currentChild._id ? 'active' : ''}}"
+        wx:for="{{childList}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="switchChild"
+      >
+        <image 
+          class="avatar" 
+          src="{{item.avatar || '/images/default-avatar.png'}}" 
+          mode="aspectFill"
+        />
+        <view class="info">
+          <text class="name">{{item.name}}</text>
+          <text class="age">{{item.age}}</text>
+        </view>
+        <text class="check-icon" wx:if="{{item._id === currentChild._id}}">✓</text>
+      </view>
+    </view>
+  </view>
+</drawer> 

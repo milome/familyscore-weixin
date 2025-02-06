@@ -4,23 +4,24 @@
     <view class="form-group">
       <view class="form-item">
         <text class="label">日期</text>
-        <calendar 
-          value="{{form.date}}"
-          bind:change="onDateChange"
-        />
+        <view class="calendar-container">
+          <calendar 
+            value="{{form.date}}"
+            bind:change="onDateChange"
+          />
+        </view>
       </view>
 
       <view class="form-item">
         <text class="label">选择成员</text>
         <picker 
           mode="selector" 
-          range="{{members}}" 
+          range="{{memberList}}" 
           range-key="name"
-          value="{{memberIndex}}"
           bindchange="onMemberChange"
         >
-          <view class="picker {{form.memberId ? '' : 'placeholder'}}">
-            {{form.memberName || '请选择成员'}}
+          <view class="picker {{selectedMember ? '' : 'placeholder'}}">
+            {{selectedMember ? selectedMember.name : '请选择孩子'}}
           </view>
         </picker>
       </view>
@@ -29,21 +30,20 @@
         <text class="label">选择规则</text>
         <picker 
           mode="selector" 
-          range="{{rules}}" 
+          range="{{ruleList}}" 
           range-key="name"
-          value="{{ruleIndex}}"
           bindchange="onRuleChange"
         >
-          <view class="picker {{form.ruleId ? '' : 'placeholder'}}">
-            {{form.ruleName || '请选择规则'}}
+          <view class="picker {{selectedRule ? '' : 'placeholder'}}">
+            {{selectedRule ? selectedRule.name : '请选择规则'}}
           </view>
         </picker>
       </view>
 
-      <view class="form-item">
+      <view class="form-item" wx:if="{{selectedRule}}">
         <text class="label">积分</text>
-        <view class="points {{form.type}}">
-          {{form.type === 'reward' ? '+' : '-'}}{{form.points}}
+        <view class="points {{selectedRule.type}}">
+          {{selectedRule.type === 'reward' ? '+' : '-'}}{{selectedRule.points}}
         </view>
       </view>
     </view>

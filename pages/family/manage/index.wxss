@@ -1,0 +1,142 @@
+.container {
+  min-height: 100vh;
+  background: var(--background);
+  padding: 24rpx;
+  padding-top: calc(88rpx + env(safe-area-inset-top));
+  padding-bottom: calc(148rpx + env(safe-area-inset-bottom));
+}
+
+.child-info {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.text-avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  margin-right: 24rpx;
+}
+
+.info {
+  flex: 1;
+}
+
+.name {
+  font-size: 32rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.age {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.family-list {
+  background: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 48rpx;
+}
+
+.family-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.family-item:last-child {
+  margin-bottom: 0;
+}
+
+.family-item .info {
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.family-item .name {
+  font-size: 32rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.family-item .role {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.edit {
+  color: var(--primary-color);
+  font-size: 28rpx;
+}
+
+.delete {
+  color: var(--error-color);
+  font-size: 28rpx;
+}
+
+.back-home {
+  font-size: 28rpx;
+  color: var(--primary-color);
+  padding: 12rpx 24rpx;
+}
+
+.back-btn,
+.nav-btn {
+  font-size: 28rpx;
+  padding: 12rpx 24rpx;
+}
+
+.back-btn {
+  color: var(--text-primary);
+}
+
+.nav-btn {
+  color: var(--primary-color);
+}
+
+/* 底部按钮组 */
+.bottom-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 24rpx;
+}
+
+.bottom-buttons .add-btn,
+.bottom-buttons .home-btn {
+  flex: 1;
+  margin: 0;
+  font-size: 32rpx;
+}
+
+.bottom-buttons .home-btn {
+  background: #f5f5f5;
+  color: var(--text-primary);
+}

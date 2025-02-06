@@ -1,25 +1,81 @@
 <skeleton wx:if="{{loading}}" />
 
-<view class="container" wx:else>
-  <scroll-view 
-    scroll-y 
-    refresher-enabled
-    refresher-triggered="{{refreshing}}"
-    bindrefresherrefresh="onRefresh"
-    class="scroll-view {{refreshing ? 'refreshing' : ''}}"
-  >
-    <!-- 顶部用户信息 -->
-    <view class="header">
-      <view class="user-info">
-        <image 
-          class="avatar" 
-          src="{{userInfo.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}"
-        />
-        <view class="info">
-          <text class="nickname">{{userInfo.nickName || '未登录'}}</text>
-          <text class="welcome">欢迎使用家庭积分</text>
-        </view>
+<view class="container">
+  <!-- 顶部栏 -->
+  <view class="header">
+    <child-switcher 
+      currentChild="{{currentChild}}"
+      bind:switch="onChildSwitch"
+    />
+    <navigator 
+      class="settings"
+      url="/pages/settings/index"
+      hover-class="none"
+    >
+      <text class="icon">⚙️</text>
+    </navigator>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <loading />
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:elif="{{!currentChild}}">
+    <text class="icon">👶</text>
+    <text class="text">还没有添加宝贝</text>
+    <button 
+      class="add-btn"
+      type="primary"
+      bindtap="goToAddChild"
+    >添加宝贝</button>
+  </view>
+
+  <!-- 主内容 -->
+  <block wx:else>
+    <!-- 孩子信息 -->
+    <view class="child-info">
+      <view class="text-avatar">{{currentChild.name[0]}}</view>
+      <view class="info">
+        <text class="name">{{currentChild.name}}</text>
+        <text class="age">{{currentChild.age}}</text>
       </view>
+      <view class="points">
+        <text class="label">积分</text>
+        <text class="value">{{currentChild.points}}</text>
+      </view>
+    </view>
+
+    <!-- 家人信息 -->
+    <view class="family-info">
+      <card title="家人" subtitle="管理" bind:more="goToFamilyManage">
+        <view class="family-list">
+          <block wx:if="{{familyList.length}}">
+            <view class="family-grid">
+              <view 
+                class="family-item" 
+                wx:for="{{familyList}}" 
+                wx:key="_id"
+                bindtap="editFamily"
+                data-id="{{item.memberId}}"
+              >
+                <view class="text-avatar">{{item.name[0]}}</view>
+                <text class="name">{{item.name}}</text>
+                <text class="role">{{item.role}}</text>
+              </view>
+              <view class="family-item add" bindtap="addFamilyMember">
+                <text class="icon">+</text>
+                <text class="text">添加家人</text>
+              </view>
+            </view>
+          </block>
+          <view class="empty-family" wx:else bindtap="addFamilyMember">
+            <text class="icon">👨‍👩‍👧‍👦</text>
+            <text class="text">添加家人</text>
+          </view>
+        </view>
+      </card>
     </view>
 
     <!-- 积分概览 -->
@@ -47,28 +103,30 @@
     </view>
 
     <!-- 快捷功能 -->
-    <view class="quick-actions">
-      <card title="快捷功能">
-        <view class="action-grid">
-          <view class="action-item" bindtap="addRecord">
-            <text class="icon">➕</text>
-            <text>添加记录</text>
-          </view>
-          <view class="action-item" bindtap="goToMembers">
-            <text class="icon">👥</text>
-            <text>成员管理</text>
-          </view>
-          <view class="action-item" bindtap="goToRules">
-            <text class="icon">📋</text>
-            <text>规则管理</text>
-          </view>
-          <view class="action-item" bindtap="goToStats">
-            <text class="icon">📊</text>
-            <text>统计分析</text>
-          </view>
+    <card title="便捷功能">
+      <view class="quick-actions">
+        <view class="action-item" bindtap="goToAddChild">
+          <text class="icon">👶</text>
+          <text class="text">添加宝贝</text>
         </view>
-      </card>
-    </view>
+        <view class="action-item" bindtap="goToRules">
+          <text class="icon">📋</text>
+          <text class="text">规则管理</text>
+        </view>
+        <view class="action-item" bindtap="addRecord">
+          <text class="icon">➕</text>
+          <text class="text">添加记录</text>
+        </view>
+        <view class="action-item" bindtap="goToStats">
+          <text class="icon">📊</text>
+          <text class="text">数据统计</text>
+        </view>
+        <view class="action-item" bindtap="playScratchGame">
+          <text class="icon">🎰</text>
+          <text class="text">刮刮卡</text>
+        </view>
+      </view>
+    </card>
 
     <!-- 最近记录 -->
     <view class="recent-records">
@@ -79,7 +137,7 @@
       >
         <view class="record-list">
           <view class="record-item" wx:for="{{recentRecords}}" wx:key="_id">
-            <image class="avatar" src="{{item.memberAvatar || '/images/default-avatar.png'}}" />
+            <view class="text-avatar">{{item.memberName[0]}}</view>
             <view class="content">
               <view class="title">
                 <text class="name">{{item.memberName}}</text>
@@ -96,5 +154,5 @@
         </view>
       </card>
     </view>
-  </scroll-view>
+  </block>
 </view> 

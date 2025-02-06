@@ -1,1 +1,29 @@
- 
+# 开发工具配置
+.DS_Store
+.idea
+.vscode
+*.swp
+*.swo
+
+# 项目依赖
+node_modules/
+miniprogram_npm/
+
+# 小程序特定文件
+project.private.config.json
+project.config.json
+
+# 编译和构建文件
+dist/
+build/
+
+# 日志文件
+*.log
+npm-debug.log*
+
+# 本地环境文件
+.env.local
+.env.*.local
+
+# 云函数编译文件
+cloudfunctions/**/node_modules 

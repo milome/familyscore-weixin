@@ -1,0 +1,61 @@
+<nav-bar title="创建刮刮卡" />
+
+<view class="container">
+  <form bindsubmit="handleSubmit">
+    <view class="form-group">
+      <view class="form-item">
+        <text class="label">标题</text>
+        <input 
+          class="input" 
+          name="title" 
+          value="{{form.title}}"
+          placeholder="请输入标题"
+          maxlength="20"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">描述</text>
+        <textarea 
+          class="textarea" 
+          name="description"
+          value="{{form.description}}"
+          placeholder="请输入描述"
+          maxlength="100"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">积分</text>
+        <input 
+          class="input" 
+          type="number"
+          name="points"
+          value="{{form.points}}"
+          placeholder="请输入积分"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">中奖概率</text>
+        <slider 
+          name="probability"
+          value="{{form.probability * 100}}"
+          min="0"
+          max="100"
+          show-value
+          bindchange="onProbabilityChange"
+        />
+      </view>
+    </view>
+
+    <view class="footer">
+      <button 
+        class="submit-btn" 
+        type="primary" 
+        loading="{{submitting}}"
+        form-type="submit"
+      >保存</button>
+    </view>
+  </form>
+</view> 

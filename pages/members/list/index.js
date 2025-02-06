@@ -3,12 +3,11 @@ const { getMemberList, deleteMember } = require('../../../services/members')
 
 Page({
   data: {
-    members: [],
     loading: false,
     keyword: '',
     showDeleteModal: false,
     deletingId: '',
-    isEmpty: false
+    children: []
   },
 
   onLoad() {
@@ -24,22 +23,20 @@ Page({
   },
 
   async loadMembers() {
-    if (this.data.loading) return
-    this.setData({ loading: true })
-
     try {
-      const data = await getMemberList(this.data.keyword)
+      this.setData({ loading: true })
+      const children = await getMemberList('children')
       this.setData({ 
-        members: data,
-        isEmpty: !data || data.length === 0
+        children,
+        loading: false
       })
+      wx.stopPullDownRefresh()
     } catch (err) {
-      console.error('加载成员失败:', err)
+      console.error('加载宝贝列表失败:', err)
       wx.showToast({
         title: '加载失败',
         icon: 'error'
       })
-    } finally {
       this.setData({ loading: false })
       wx.stopPullDownRefresh()
     }
@@ -53,49 +50,17 @@ Page({
     })
   },
 
-  addMember() {
-    console.log('添加成员')
-    try {
-      wx.navigateTo({
-        url: '/pages/members/edit/index',
-        fail: (err) => {
-          console.error('导航失败:', err)
-          wx.showToast({
-            title: '导航失败',
-            icon: 'error'
-          })
-        }
-      })
-    } catch (err) {
-      console.error('导航错误:', err)
-      wx.showToast({
-        title: '系统错误',
-        icon: 'error'
-      })
-    }
+  addChild() {
+    wx.navigateTo({
+      url: '/pages/members/children/edit/index'
+    })
   },
 
-  editMember(e) {
-    console.log('编辑成员:', e.currentTarget.dataset.id)
+  editChild(e) {
     const { id } = e.currentTarget.dataset
-    try {
-      wx.navigateTo({
-        url: `/pages/members/edit/index?id=${id}`,
-        fail: (err) => {
-          console.error('导航失败:', err)
-          wx.showToast({
-            title: '导航失败',
-            icon: 'error'
-          })
-        }
-      })
-    } catch (err) {
-      console.error('导航错误:', err)
-      wx.showToast({
-        title: '系统错误',
-        icon: 'error'
-      })
-    }
+    wx.navigateTo({
+      url: `/pages/members/children/edit/index?id=${id}`
+    })
   },
 
   showDeleteConfirm(e) {

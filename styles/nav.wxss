@@ -1,0 +1,13 @@
+.back-btn,
+.nav-btn {
+  font-size: 28rpx;
+  padding: 12rpx 24rpx;
+}
+
+.back-btn {
+  color: var(--text-primary);
+}
+
+.nav-btn {
+  color: var(--primary-color);
+} 

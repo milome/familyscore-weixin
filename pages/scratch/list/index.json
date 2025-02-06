@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "刮刮卡",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "search": "/components/search/search",
+    "modal": "/components/modal/modal",
+    "card": "/components/card/card"
+  }
+} 

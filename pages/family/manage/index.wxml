@@ -1,0 +1,52 @@
+<nav-bar title="家人管理">
+  <view slot="left">
+    <text class="back-btn" bindtap="goBack">返回</text>
+  </view>
+  <view slot="right">
+    <navigator url="/pages/index/index" open-type="switchTab" hover-class="none">
+      <text class="nav-btn">返回首页</text>
+    </navigator>
+  </view>
+</nav-bar>
+
+<view class="container">
+  <skeleton wx:if="{{loading}}" />
+
+  <block wx:else>
+    <!-- 孩子信息 -->
+    <view class="child-info">
+      <view class="text-avatar">{{childInfo.name[0]}}</view>
+      <view class="info">
+        <text class="name">{{childInfo.name}}</text>
+        <text class="age">{{childInfo.age}}</text>
+      </view>
+    </view>
+
+    <!-- 家人列表 -->
+    <view class="family-list">
+      <view 
+        class="family-item"
+        wx:for="{{familyList}}"
+        wx:key="_id"
+      >
+        <view class="text-avatar">{{item.name[0]}}</view>
+        <view class="info">
+          <text class="name">{{item.name}}</text>
+          <text class="role">{{item.role}}</text>
+        </view>
+        <view class="actions">
+          <text class="edit" catchtap="editFamily" data-id="{{item._id}}">编辑</text>
+          <text class="delete" catchtap="deleteFamily" data-id="{{item._id}}">删除</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 底部按钮组 -->
+<view class="bottom-buttons">
+  <button class="add-btn" type="primary" bindtap="addFamily">添加家人</button>
+  <navigator url="/pages/index/index" open-type="switchTab" hover-class="none">
+    <button class="home-btn">返回首页</button>
+  </navigator>
+</view>

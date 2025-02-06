@@ -1,12 +1,26 @@
 <view class="calendar">
-  <picker 
-    mode="date" 
-    value="{{date}}"
-    bindchange="onConfirm"
-  >
-    <view class="input">
-      <text class="value">{{date || placeholder}}</text>
-      <text class="icon">📅</text>
+  <view class="calendar-header">
+    <view class="year-month">
+      <text class="year">{{currentYear}}年</text>
+      <text class="month">{{currentMonth}}月</text>
     </view>
-  </picker>
+    <view class="selected-date">{{selectedDate || '请选择日期'}}</view>
+  </view>
+
+  <view class="calendar-body">
+    <view class="weekdays">
+      <view wx:for="{{weekdays}}" wx:key="*this" class="weekday">{{item}}</view>
+    </view>
+    <view class="days">
+      <view 
+        class="day {{item.type}} {{item.isSelected ? 'selected' : ''}} {{item.isToday ? 'today' : ''}}"
+        wx:for="{{days}}" 
+        wx:key="date"
+        data-date="{{item.date}}"
+        bindtap="onDayClick"
+      >
+        <text class="date">{{item.day}}</text>
+      </view>
+    </view>
+  </view>
 </view> 

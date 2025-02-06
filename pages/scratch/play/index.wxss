@@ -1,0 +1,175 @@
+.container {
+  min-height: 100vh;
+  background: var(--background);
+  padding: 24rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+}
+
+.card-content {
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+
+.desc {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-bottom: 16rpx;
+}
+
+.points {
+  font-size: 32rpx;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.scratch-area {
+  height: 400rpx;
+  background: #f5f7fa;
+  border-radius: 8rpx;
+  margin: 24rpx 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.scratch-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #CCCCCC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-out;
+  z-index: 10;
+}
+
+.scratch-mask.scratching {
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+.result {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.5s;
+  z-index: 5;
+}
+
+.result.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.result .icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.result .text {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+
+.result .reward {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.result.win {
+  color: var(--success-color);
+}
+
+.result.lose {
+  color: var(--error-color);
+}
+
+.claim-btn {
+  margin-top: 24rpx;
+}
+
+.mask-text {
+  color: #999;
+  font-size: 32rpx;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.child-info {
+  background: #fff;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  align-items: center;
+}
+
+.child-info .avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+}
+
+.child-info .info {
+  flex: 1;
+}
+
+.child-info .name {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.child-info .points {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.exchange-modal {
+  padding: 20rpx;
+}
+
+.available-points {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-bottom: 20rpx;
+}
+
+.available-points .points {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.exchange-input {
+  height: 80rpx;
+  background: var(--background);
+  border-radius: 8rpx;
+  padding: 0 24rpx;
+  font-size: 32rpx;
+} 

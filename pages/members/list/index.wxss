@@ -34,6 +34,26 @@
   overflow: hidden;
 }
 
+.loading {
+  padding: 48rpx;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}
+
+.empty {
+  padding: 48rpx;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 28rpx;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 24rpx;
+}
+
 .member-item {
   display: flex;
   align-items: center;
@@ -54,17 +74,27 @@
 
 .content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
 .name {
   font-size: 32rpx;
   color: var(--text-primary);
-  margin-bottom: 8rpx;
 }
 
-.remark {
-  font-size: 24rpx;
-  color: var(--text-secondary);
+.points {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.points.positive {
+  color: var(--success-color);
+}
+
+.points.negative {
+  color: var(--error-color);
 }
 
 .actions {
@@ -74,18 +104,22 @@
 
 .action-btn {
   padding: 0;
-  margin: 0;
   width: 64rpx;
   height: 64rpx;
-  line-height: 64rpx;
-  text-align: center;
-  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
-  border: none;
+  border: 1rpx solid var(--border-color);
+  border-radius: 50%;
 }
 
 .action-btn::after {
-  display: none;
+  border: none;
+}
+
+.action-btn .icon {
+  font-size: 32rpx;
 }
 
 .btn-hover {

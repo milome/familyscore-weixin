@@ -1,13 +1,6 @@
-<view class="list-item {{border ? 'border' : ''}} {{className}}" bindtap="handleTap">
-  <view class="left">
-    <image wx:if="{{icon}}" class="icon" src="{{icon}}" mode="aspectFit" />
-    <view class="content">
-      <view class="title">{{title}}</view>
-      <view class="subtitle" wx:if="{{subtitle}}">{{subtitle}}</view>
-    </view>
+<view class="list-item" bindtap="onClick">
+  <view class="content">
+    <text class="title">{{title}}</text>
   </view>
-  <view class="right">
-    <text class="value" wx:if="{{value}}">{{value}}</text>
-    <image wx:if="{{arrow}}" class="arrow" src="/images/icons/arrow.png" mode="aspectFit" />
-  </view>
+  <text class="arrow" wx:if="{{arrow}}">></text>
 </view> 
