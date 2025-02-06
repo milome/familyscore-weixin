@@ -19,56 +19,46 @@ Page({
   },
 
   async onLoad(options) {
-    if (options.id) {
-      this.setData({ id: options.id })
+    if (!options.id) {
+      wx.showToast({
+        title: '参数错误',
+        icon: 'error'
+      })
+      return
+    }
+
+    try {
+      this.setData({ loading: true })
       
-      // 获取当前选中的孩子信息
-      const currentChild = await getCurrentChild()
-      if (!currentChild) {
+      // 获取刮刮卡详情
+      const db = wx.cloud.database()
+      const { data: card } = await db.collection('scratch_cards')
+        .doc(options.id)
+        .get()
+      
+      if (!card) {
         wx.showToast({
-          title: '请先选择孩子',
-          icon: 'none'
+          title: '刮刮卡不存在',
+          icon: 'error'
         })
-        setTimeout(() => {
-          wx.navigateBack()
-        }, 1500)
         return
       }
 
-      // 获取孩子积分
-      const { points } = await getChildPoints(currentChild._id)
-      
       this.setData({
-        currentChild,
-        childPoints: points
-      })
-
-      // 检查积分是否足够
-      const { data: card } = await scratchService.getCardDetail(options.id)
-      if (points < card.points) {
-        wx.showToast({
-          title: '积分不足',
-          icon: 'none'
-        })
-        setTimeout(() => {
-          wx.navigateBack()
-        }, 1500)
-        return
-      }
-
-      // 扣除积分并添加记录
-      await deductPoints(currentChild._id, card.points, {
-        description: `兑换刮刮卡 - ${card.title}`,  // 添加积分记录描述
-        ruleId: card._id,
-        ruleName: card.title
-      })
-      
-      // 更新页面数据
-      this.setData({ 
+        id: options.id,
         card,
-        loading: false,
-        childPoints: points - card.points
+        loading: false
       })
+
+      // 加载孩子信息和积分
+      await this.loadData()
+    } catch (err) {
+      console.error('加载失败:', err)
+      wx.showToast({
+        title: '加载失败',
+        icon: 'error'
+      })
+      this.setData({ loading: false })
     }
   },
 
@@ -127,25 +117,33 @@ Page({
   },
 
   // 修改领取奖励方法
-  async claimPrize() {
-    if (!this.data.hasWon || this.data.claiming) return
+  async claimPoints() {
+    if (this.data.claiming) return
+    this.setData({ claiming: true })
 
     try {
-      this.setData({ claiming: true })
-      
-      // 只标记奖品已领取，不再扣除积分
-      await scratchService.claimPrize(this.data.id)
-      
-      this.setData({ 
-        claiming: false,
-        showPointsModal: true
+      // 使用已有的 deductPoints 方法扣除积分
+      await deductPoints(this.data.currentChild._id, this.data.card.points, {
+        description: `兑换${this.data.card.title}`,
+        ruleName: '兑换奖励'  // 使用虚拟规则名
       })
+
+      wx.showToast({
+        title: '领取成功',
+        icon: 'success'
+      })
+
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 1500)
+
     } catch (err) {
       console.error('领取失败:', err)
       wx.showToast({
         title: '领取失败',
         icon: 'error'
       })
+    } finally {
       this.setData({ claiming: false })
     }
   },
@@ -279,5 +277,19 @@ Page({
       })
       this.setData({ loading: false })
     }
+  },
+
+  showPointsModal() {
+    wx.showModal({
+      title: '恭喜中奖',
+      content: `获得${this.data.card.points}积分`,
+      showCancel: false,
+      confirmText: '立即领取',
+      success: async (res) => {
+        if (res.confirm) {
+          await this.claimPoints()
+        }
+      }
+    })
   },
 }) 

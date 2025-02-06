@@ -206,30 +206,22 @@ async function addPoints(childId, points, extra = {}) {
       time: new Date().toISOString()
     })
 
-    // 在 point_records 集合中创建记录
-    const recordData = {
-      childId,
-      points: Math.abs(points),
-      type: points >= 0 ? 'reward' : 'penalty',
-      ruleId: extra.ruleId || '',
-      ruleName: extra.ruleName || '',
-      description: extra.description || '',
-      createTime: db.serverDate(),
-      updateTime: db.serverDate(),
-      isDeleted: false
-    }
-
-    const result = await db.collection('point_records').add({
-      data: recordData
-    })
+    // 只更新孩子的积分
+    const db = wx.cloud.database()
+    const _ = db.command
+    await db.collection('children')
+      .doc(childId)
+      .update({
+        data: {
+          points: _.inc(points),
+          updateTime: db.serverDate()
+        }
+      })
 
     console.log('积分记录完成:', {
       childId,
       points,
-      type: recordData.type,
-      ruleName: recordData.ruleName,
-      description: recordData.description,
-      recordId: result._id,
+      type: points >= 0 ? 'reward' : 'penalty',
       time: new Date().toISOString()
     })
 
@@ -267,27 +259,21 @@ async function deductPoints(childId, points, extra = {}) {
       time: new Date().toISOString()
     })
 
-    // 在 point_records 集合中创建扣除记录
-    const recordData = {
-      childId,
-      points: Math.abs(points),
-      type: 'penalty',  // 扣除积分使用 penalty 类型
-      description: extra.description || '',  // 添加描述
-      ruleId: extra.ruleId || '',  // 关联规则ID
-      ruleName: extra.ruleName || '',  // 关联规则名称
-      createTime: db.serverDate(),
-      updateTime: db.serverDate(),
-      isDeleted: false
-    }
-
-    const result = await db.collection('point_records').add({
-      data: recordData
-    })
+    // 只更新孩子的积分
+    const db = wx.cloud.database()
+    const _ = db.command
+    await db.collection('children')
+      .doc(childId)
+      .update({
+        data: {
+          points: _.inc(-Math.abs(points)),  // 确保是负数
+          updateTime: db.serverDate()
+        }
+      })
 
     console.log('积分扣除完成:', {
       childId,
       points,
-      recordId: result._id,
       time: new Date().toISOString()
     })
 

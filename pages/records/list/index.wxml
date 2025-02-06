@@ -5,15 +5,6 @@
     </view>
   </nav-bar>
 
-  <!-- 顶部操作栏 -->
-  <view class="header">
-    <search placeholder="搜索记录" bindsearch="onSearch" />
-    <button class="add-btn" bindtap="addRecord">
-      <text class="icon">+</text>
-      <text>添加记录</text>
-    </button>
-  </view>
-
   <!-- 筛选面板 -->
   <filter-panel>
     <view class="filter-row">
@@ -59,6 +50,11 @@
         </view>
       </view>
     </view>
+  </view>
+
+  <!-- 悬浮添加按钮 -->
+  <view class="fab" bindtap="addRecord">
+    <text class="icon">+</text>
   </view>
 
   <!-- 加载更多 -->

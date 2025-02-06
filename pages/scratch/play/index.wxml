@@ -43,7 +43,7 @@
       type="primary"
       loading="{{claiming}}"
       disabled="{{!hasWon || !revealed}}"
-      bindtap="claimPrize"
+      bindtap="claimPoints"
     >领取奖励</button>
   </view>
 </view>

@@ -1,5 +1,9 @@
 <!--pages/scratch/edit/index.wxml-->
-<nav-bar title="编辑刮刮卡" />
+<nav-bar title="{{id ? '编辑刮刮卡' : '新建刮刮卡'}}">
+  <view slot="left">
+    <text class="back-btn" bindtap="goBack">返回</text>
+  </view>
+</nav-bar>
 
 <view class="container">
   <form bindsubmit="handleSubmit">
@@ -12,6 +16,8 @@
           value="{{form.title}}"
           placeholder="请输入标题"
           maxlength="20"
+          bindinput="onInput"
+          data-field="title"
         />
       </view>
 
@@ -23,6 +29,8 @@
           value="{{form.description}}"
           placeholder="请输入描述"
           maxlength="100"
+          bindinput="onInput"
+          data-field="description"
         />
       </view>
 
@@ -34,6 +42,8 @@
           name="points"
           value="{{form.points}}"
           placeholder="请输入积分"
+          bindinput="onInput"
+          data-field="points"
         />
       </view>
 

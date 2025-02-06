@@ -214,7 +214,8 @@ Page({
 
     this.setData({ submitting: true })
     try {
-      // ... 现有的提交逻辑 ...
+      // 调用保存记录方法
+      await this.saveRecord()
     } finally {
       this.setData({ submitting: false })
     }

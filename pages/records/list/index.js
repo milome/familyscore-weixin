@@ -4,7 +4,6 @@ Page({
     loading: false,
     hasMore: true,
     pageSize: 20,
-    keyword: '',
     filter: {
       startDate: '',
       endDate: '',
@@ -35,6 +34,19 @@ Page({
     })
   },
 
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+    // 重置列表并重新加载
+    this.setData({
+      records: [],
+      hasMore: true
+    }, () => {
+      this.loadRecords()
+    })
+  },
+
   async loadRecords() {
     if (this.data.loading || !this.data.hasMore) return
     this.setData({ loading: true })
@@ -55,14 +67,6 @@ Page({
       // 添加类型筛选
       if (this.data.filter.type) {
         query.type = this.data.filter.type
-      }
-
-      // 添加关键词搜索
-      if (this.data.keyword) {
-        query.memberName = db.RegExp({
-          regexp: this.data.keyword,
-          options: 'i'
-        })
       }
 
       const { data } = await db.collection('point_records')
@@ -120,16 +124,6 @@ Page({
       this.setData({ loading: false })
       wx.stopPullDownRefresh()
     }
-  },
-
-  onSearch(e) {
-    this.setData({
-      keyword: e.detail,
-      records: [],
-      hasMore: true
-    }, () => {
-      this.loadRecords()
-    })
   },
 
   onDateChange(e) {

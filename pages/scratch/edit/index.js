@@ -50,37 +50,71 @@ Page({
     })
   },
 
-  async handleSubmit(e) {
-    const { title, description, points } = e.detail.value
-    const { probability } = this.data.form
+  onInput(e) {
+    const { field } = e.currentTarget.dataset
+    const { value } = e.detail
+    
+    console.log('表单输入:', { field, value })
+    
+    this.setData({
+      [`form.${field}`]: value
+    })
+  },
 
-    if (!title || !description || !points) {
+  async handleSubmit() {
+    if (this.data.submitting) return
+    
+    const { form } = this.data
+    
+    // 表单验证
+    if (!form.title) {
       wx.showToast({
-        title: '请填写完整信息',
+        title: '请输入标题',
         icon: 'none'
       })
       return
     }
-
+    
+    if (!form.points || form.points <= 0) {
+      wx.showToast({
+        title: '请输入有效积分',
+        icon: 'none'
+      })
+      return
+    }
+    
+    this.setData({ submitting: true })
     try {
-      this.setData({ submitting: true })
-
-      await scratchService.updateCard(this.data.id, {
-        title,
-        description,
-        points: Number(points),
-        probability
+      console.log('准备保存刮刮卡:', {
+        id: this.data.id,
+        form
       })
 
+      if (this.data.id) {
+        // 使用 scratchService 更新刮刮卡
+        await scratchService.updateCard(this.data.id, {
+          title: form.title,
+          description: form.description,
+          points: parseInt(form.points)
+        })
+      } else {
+        // 创建刮刮卡
+        await scratchService.createCard({
+          title: form.title,
+          description: form.description,
+          points: parseInt(form.points)
+        })
+      }
+      
       wx.showToast({
         title: '保存成功',
         icon: 'success'
       })
-
+      
       setTimeout(() => {
         wx.navigateBack()
       }, 1500)
-
+      
     } catch (err) {
       console.error('保存失败:', err)
       wx.showToast({

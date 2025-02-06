@@ -29,18 +29,15 @@ async function getCardList() {
  */
 async function getCardDetail(id) {
   try {
-    // 模拟请求
-    await new Promise(resolve => setTimeout(resolve, 100))
+    console.log('获取刮刮卡详情:', id)
+
+    const { data } = await collection.doc(id).get()
+
+    console.log('获取到的刮刮卡数据:', data)
 
     return {
       success: true,
-      data: {
-        id,
-        title: '观影券',
-        description: '可用于观看任意一部电影',
-        points: 50,  // 修改为50积分
-        probability: 1
-      }
+      data
     }
   } catch (err) {
     console.error('获取详情失败:', err)
@@ -77,17 +74,36 @@ async function createCard(cardData) {
  */
 async function updateCard(id, data) {
   try {
-    await collection.doc(id).update({
-      data: {
-        ...data,
-        updateTime: db.serverDate()
-      }
-    })
+    console.log('开始更新刮刮卡:', { id, data })
+
+    const result = await collection
+      .doc(id)
+      .update({
+        data: {
+          title: data.title,
+          description: data.description,
+          points: parseInt(data.points),
+          status: 'active',
+          updateTime: db.serverDate()
+        }
+      })
+
+    console.log('更新刮刮卡结果:', result)
+
+    const updated = await collection.doc(id).get()
+    console.log('更新后的数据:', updated.data)
+
     return {
-      success: true
+      success: true,
+      data: result
     }
   } catch (err) {
     console.error('更新刮刮卡失败:', err)
+    console.error('错误详情:', {
+      id,
+      data,
+      error: err
+    })
     throw err
   }
 }
