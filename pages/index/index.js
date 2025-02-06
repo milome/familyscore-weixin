@@ -112,6 +112,9 @@ Page({
         
         // 加载家人列表
         await this.loadFamilyList(currentChild._id)
+        
+        // 加载本月统计
+        await this.loadMonthStats()
       }
     } catch (err) {
       console.error('加载失败:', err)

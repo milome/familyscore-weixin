@@ -229,10 +229,13 @@ Page({
         ruleId: rule._id,
         ruleName: rule.name,
         points: rule.points,
+        type: rule.type,  // 记录规则类型
         time: new Date().toISOString()
       })
 
-      await addPoints(child._id, rule.points)
+      // 根据规则类型决定加分还是扣分
+      const points = rule.type === 'penalty' ? -rule.points : rule.points
+      await addPoints(child._id, points)
 
       wx.showToast({
         title: '添加成功',

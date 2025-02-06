@@ -135,21 +135,29 @@ async function getChildPoints(childId) {
       })
       .group({
         _id: null,
-        totalPoints: $.sum($.cond({
+        rewardPoints: $.sum($.cond({
           if: $.eq(['$type', 'reward']),
           then: '$points',
-          else: $.multiply(['$points', -1])  // penalty 类型取负值
+          else: 0
+        })),
+        penaltyPoints: $.sum($.cond({
+          if: $.eq(['$type', 'penalty']),
+          then: '$points',
+          else: 0
         }))
       })
       .end()
 
-    const points = list.length > 0 ? list[0].totalPoints : 0
-    
+    // 奖励积分加上，惩罚积分减去
+    const points = list.length > 0 ? 
+      (list[0].rewardPoints - list[0].penaltyPoints) : 0
+
     // 添加详细日志
     console.log('积分计算详情:', {
       childId,
       points,
-      aggregateResult: list,
+      rewardPoints: list[0]?.rewardPoints || 0,
+      penaltyPoints: list[0]?.penaltyPoints || 0,
       time: new Date().toISOString()
     })
 
@@ -190,17 +198,18 @@ async function addPoints(childId, points) {
   }
 
   try {
-    console.log('开始增加积分:', {
+    console.log('开始处理积分:', {
       childId,
       points,
+      type: points >= 0 ? 'reward' : 'penalty',
       time: new Date().toISOString()
     })
 
-    // 在 point_records 集合中创建奖励记录
+    // 在 point_records 集合中创建记录
     const recordData = {
       childId,
       points: Math.abs(points),
-      type: 'reward',  // 增加积分使用 reward 类型
+      type: points >= 0 ? 'reward' : 'penalty',  // 根据积分正负判断类型
       createTime: db.serverDate(),
       updateTime: db.serverDate(),
       isDeleted: false
@@ -210,9 +219,10 @@ async function addPoints(childId, points) {
       data: recordData
     })
 
-    console.log('积分增加完成:', {
+    console.log('积分记录完成:', {
       childId,
       points,
+      type: recordData.type,
       recordId: result._id,
       time: new Date().toISOString()
     })
@@ -221,7 +231,7 @@ async function addPoints(childId, points) {
       success: true
     }
   } catch (err) {
-    console.error('增加积分失败:', {
+    console.error('处理积分失败:', {
       childId,
       points,
       error: err,
