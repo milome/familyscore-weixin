@@ -9,7 +9,6 @@ Page({
   data: {
     rules: [],
     loading: false,
-    keyword: '',
     showDeleteModal: false,
     deletingId: '',
     isEmpty: false
@@ -72,11 +71,20 @@ Page({
   },
 
   async loadRules() {
-    if (this.data.loading) return
     this.setData({ loading: true })
 
     try {
-      const data = await getRuleList(this.data.keyword)
+      const db = wx.cloud.database()
+      const _ = db.command
+      const query = {
+        isDeleted: _.neq(true)
+      }
+
+      const { data } = await db.collection('point_rules')
+        .where(query)
+        .orderBy('createTime', 'desc')
+        .get()
+
       this.setData({ 
         rules: data,
         isEmpty: !data || data.length === 0
@@ -91,14 +99,6 @@ Page({
       this.setData({ loading: false })
       wx.stopPullDownRefresh()
     }
-  },
-
-  onSearch(e) {
-    this.setData({
-      keyword: e.detail
-    }, () => {
-      this.loadRules()
-    })
   },
 
   addRule() {
