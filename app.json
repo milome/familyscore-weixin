@@ -31,15 +31,15 @@
     "color": "#999999",
     "selectedColor": "#07c160",
     "backgroundColor": "#ffffff",
-    "borderStyle": "white",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": " 🏠\n首页"
       },
       {
         "pagePath": "pages/settings/index",
-        "text": "我的"
+        "text": " 👤\n我的"
       }
     ]
   },
