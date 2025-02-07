@@ -34,15 +34,15 @@
 
 .rule-item .points {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .rule-item .points.reward {
-  color: var(--success-color);
+  color: #ff4d4f;
 }
 
 .rule-item .points.penalty {
-  color: var(--error-color);
+  color: #52c41a;
 }
 
 .rule-item .actions {

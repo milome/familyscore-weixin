@@ -22,7 +22,9 @@
     >
       <view class="content">
         <text class="name">{{item.name}}</text>
-        <text class="points {{item.type}}">{{item.type === 'reward' ? '+' : '-'}}{{item.points}}</text>
+        <text class="points {{item.type}}">
+          {{item.type === 'reward' ? '+' : '-'}}{{item.points}}
+        </text>
       </view>
       <view class="actions">
         <button 

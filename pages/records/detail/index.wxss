@@ -73,9 +73,9 @@
 }
 
 .points.positive {
-  color: var(--success-color);
+  color: #ff4d4f;  /* 奖励(正分)显示红色 */
 }
 
 .points.negative {
-  color: var(--error-color);
+  color: #52c41a;  /* 惩罚(负分)显示绿色 */
 } 
