@@ -1,58 +1,37 @@
-<view class="container">
-  <!-- 顶部操作栏 -->
-  <view class="header">
-    <search placeholder="搜索刮刮卡" bindsearch="onSearch" />
-    <button 
-      class="add-btn" 
-      bindtap="createCard"
-      wx:if="{{isManageMode || isParent}}"
-    >
-      <text class="icon">+</text>
-      <text>新建</text>
-    </button>
-  </view>
+<!-- 页面标题 -->
+<view class="header">
+  <text class="header-title">刮刮卡管理</text>
+</view>
 
-  <!-- 刮刮卡列表 -->
-  <view class="card-list">
-    <view 
-      class="card-item"
-      wx:for="{{cards}}"
-      wx:key="_id"
-    >
-      <!-- 卡片内容 - 管理模式下点击不触发游戏 -->
-      <view class="card-content" bindtap="{{isManageMode ? '' : 'playCard'}}" data-id="{{item._id}}">
-        <view class="title">{{item.title}}</view>
-        <view class="desc">{{item.description}}</view>
-        <view class="points">{{item.points}}积分</view>
-      </view>
-
-      <!-- 管理操作按钮 -->
-      <view 
-        class="card-actions"
-        wx:if="{{isManageMode || isParent}}"
-        catchtap="stopPropagation"
-      >
-        <button 
-          class="action-btn"
-          hover-class="btn-hover"
-          catchtap="editCard"
-          data-id="{{item._id}}"
-        >✏️</button>
-        <button 
-          class="action-btn"
-          hover-class="btn-hover"
-          catchtap="showDeleteConfirm"
-          data-id="{{item._id}}"
-        >🗑️</button>
+<view class="list">
+  <view class="card" 
+    wx:for="{{list}}" 
+    wx:key="_id"
+  >
+    <view class="card-content" bindtap="goToEdit" data-id="{{item._id}}">
+      <view class="title">{{item.title}}</view>
+      <view class="points {{item.points >= 0 ? 'positive' : 'negative'}}">
+        {{item.points >= 0 ? '+' : ''}}{{item.points}}
       </view>
     </view>
+    <button 
+      class="action-btn" 
+      hover-class="btn-hover"
+      catchtap="showDeleteConfirm" 
+      data-id="{{item._id}}"
+    >🗑️</button>
   </view>
+</view>
+
+<!-- 悬浮添加按钮 -->
+<view class="fab" bindtap="goToAdd">
+  <text class="fab-icon">+</text>
 </view>
 
 <modal
   visible="{{showDeleteModal}}"
   title="删除确认"
-  content="确定要删除该刮刮卡吗？删除后无法恢复。"
+  content="确定要删除该刮刮卡吗？"
   bind:confirm="confirmDelete"
   bind:cancel="hideDeleteModal"
 /> 

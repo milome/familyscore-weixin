@@ -3,22 +3,14 @@ const scratchService = require('../../../services/scratch')
 Page({
   data: {
     loading: true,
-    cards: [],
+    list: [],
     showDeleteModal: false,
-    deletingId: '',
-    isManageMode: false,  // 是否是管理模式
-    isParent: true,
-    isChild: false
+    deletingId: ''
   },
 
   async onLoad(options) {
-    // 设置管理模式
-    this.setData({
-      isManageMode: options.mode === 'manage'
-    })
-
     try {
-      await this.loadCards()
+      await this.loadData()
     } catch (err) {
       console.error('加载失败:', err)
       wx.showToast({
@@ -29,51 +21,36 @@ Page({
   },
 
   onShow() {
-    this.loadCards()
+    this.loadData()
   },
 
   onPullDownRefresh() {
-    this.loadCards()
+    this.loadData()
+    wx.stopPullDownRefresh()
   },
 
-  async loadCards() {
+  async loadData() {
     try {
-      this.setData({ loading: true })
-      const { data: cards } = await scratchService.getCardList()
+      const db = wx.cloud.database()
+      const { data } = await db.collection('scratch_cards').get()
       this.setData({ 
-        cards,
+        list: data,
         loading: false
       })
-      wx.stopPullDownRefresh()
     } catch (err) {
-      console.error('加载刮刮卡列表失败:', err)
-      wx.showToast({
-        title: '加载失败',
-        icon: 'error'
-      })
+      console.error('加载失败:', err)
       this.setData({ loading: false })
-      wx.stopPullDownRefresh()
     }
   },
 
-  createCard() {
+  goToAdd() {
     wx.navigateTo({
-      url: '/pages/scratch/create/index'
+      url: '/pages/scratch/edit/index'
     })
   },
 
-  // 只在非管理模式下才能玩游戏
-  playCard(e) {
-    if (this.data.isManageMode) return
-    
-    const { id } = e.currentTarget.dataset
-    wx.navigateTo({
-      url: `/pages/scratch/play/index?id=${id}`
-    })
-  },
-
-  editCard(e) {
-    const { id } = e.currentTarget.dataset
+  goToEdit(e) {
+    const id = e.currentTarget.dataset.id
     wx.navigateTo({
       url: `/pages/scratch/edit/index?id=${id}`
     })
@@ -96,15 +73,20 @@ Page({
 
   async confirmDelete() {
     if (!this.data.deletingId) return
-
+    
     try {
-      await scratchService.deleteCard(this.data.deletingId)
+      const db = wx.cloud.database()
+      await db.collection('scratch_cards')
+        .doc(this.data.deletingId)
+        .remove()
+        
       wx.showToast({
         title: '删除成功',
         icon: 'success'
       })
+      
       this.hideDeleteModal()
-      this.loadCards()
+      this.loadData()
     } catch (err) {
       console.error('删除失败:', err)
       wx.showToast({
@@ -112,9 +94,5 @@ Page({
         icon: 'error'
       })
     }
-  },
-
-  stopPropagation() {
-    // 阻止事件冒泡
   }
 }) 

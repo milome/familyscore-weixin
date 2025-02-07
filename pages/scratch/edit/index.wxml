@@ -67,19 +67,6 @@
         loading="{{submitting}}"
         form-type="submit"
       >保存</button>
-
-      <button 
-        class="delete-btn" 
-        bindtap="showDeleteConfirm"
-      >删除</button>
     </view>
   </form>
-
-  <modal
-    visible="{{showDeleteModal}}"
-    title="删除确认"
-    content="确定要删除该刮刮卡吗？删除后无法恢复。"
-    bind:confirm="handleDelete"
-    bind:cancel="hideDeleteModal"
-  />
 </view>
