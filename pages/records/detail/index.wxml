@@ -1,0 +1,23 @@
+<nav-bar title="打卡详情">
+  <view slot="left">
+    <text class="back-btn" bindtap="goBack">返回</text>
+  </view>
+</nav-bar>
+
+<view class="container">
+  <view class="date">{{date}}</view>
+  
+  <view class="rules-list">
+    <view class="rule-item" wx:for="{{rules}}" wx:key="_id">
+      <view class="checkbox {{item.checked ? 'checked' : ''}}">
+        <text class="icon">✓</text>
+      </view>
+      <view class="content">
+        <text class="name">{{item.name}}</text>
+        <text class="points {{item.type === 'reward' ? 'positive' : 'negative'}}">
+          {{item.type === 'reward' ? '+' : ''}}{{item.points}}
+        </text>
+      </view>
+    </view>
+  </view>
+</view> 

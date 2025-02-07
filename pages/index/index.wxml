@@ -49,7 +49,7 @@
 
     <!-- 家人信息 -->
     <view class="family-info">
-      <card title="家人" subtitle="管理" bind:more="goToFamilyManage">
+      <card title="👨‍👩‍👧‍👦 家人" subtitle="管理" bind:more="goToFamilyManage">
         <view class="family-list">
           <block wx:if="{{familyList.length}}">
             <view class="family-grid">
@@ -80,23 +80,37 @@
 
     <!-- 积分概览 -->
     <view class="overview">
-      <card title="本月概览">
-        <view class="stats-grid">
-          <view class="stat-item">
-            <text class="value">{{monthStats.total || 0}}</text>
-            <text class="label">总记录</text>
+      <card 
+        title="📅 日历" 
+        subtitle="查看更多"
+        bindmore="goToRecords"
+      >
+        <!-- 日历头部 -->
+        <view class="calendar-header">
+          <view class="weekday" wx:for="{{['日','一','二','三','四','五','六']}}" wx:key="*this">
+            {{item}}
           </view>
-          <view class="stat-item">
-            <text class="value">{{monthStats.totalPoints || 0}}</text>
-            <text class="label">总积分</text>
-          </view>
-          <view class="stat-item">
-            <text class="value">{{monthStats.rewards || 0}}</text>
-            <text class="label">奖励次数</text>
-          </view>
-          <view class="stat-item">
-            <text class="value">{{monthStats.penalties || 0}}</text>
-            <text class="label">惩罚次数</text>
+        </view>
+        
+        <!-- 月份显示 -->
+        <view class="month-title">{{currentMonth}}</view>
+        
+        <!-- 日历主体 -->
+        <view class="calendar-body">
+          <view class="calendar-row" wx:for="{{calendarData}}" wx:for-item="row" wx:key="index">
+            <view 
+              class="calendar-cell {{item.isToday ? 'today' : ''}} {{item.hasRecords ? 'has-records' : ''}}" 
+              wx:for="{{row}}" 
+              wx:key="date"
+              data-date="{{item.date}}"
+              bindtap="onDateClick"
+            >
+              <text class="date">{{item.day}}</text>
+              <block wx:if="{{item.hasRecords}}">
+                <view class="points reward" wx:if="{{item.reward}}">🌸 +{{item.reward}}</view>
+                <view class="points penalty" wx:if="{{item.penalty}}">💪 -{{item.penalty}}</view>
+              </block>
+            </view>
           </view>
         </view>
       </card>

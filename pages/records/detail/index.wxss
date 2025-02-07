@@ -1,0 +1,81 @@
+.container {
+  min-height: 100vh;
+  background: var(--background);
+  padding: 24rpx;
+  padding-top: calc(88rpx + env(safe-area-inset-top));  /* 适配导航栏 */
+}
+
+.date {
+  font-size: 36rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 48rpx;
+  color: var(--text-primary);
+}
+
+.rules-list {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+}
+
+.rule-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--border-color);
+}
+
+.rule-item:last-child {
+  border-bottom: none;
+}
+
+.checkbox {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  border: 2rpx solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+}
+
+.checkbox.checked {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox .icon {
+  color: #fff;
+  font-size: 32rpx;
+  display: none;
+}
+
+.checkbox.checked .icon {
+  display: block;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name {
+  font-size: 32rpx;
+}
+
+.points {
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.points.positive {
+  color: var(--success-color);
+}
+
+.points.negative {
+  color: var(--error-color);
+} 

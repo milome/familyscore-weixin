@@ -3,6 +3,8 @@ const app = getApp()
 const scratchService = require('../../services/scratch')  // 添加这行
 const userService = require('../../services/user')
 const { getCurrentChild, getChildPoints } = require('../../services/user')
+const { formatDate, isSameDay } = require('../../utils/date')
+const { getMonthRecords } = require('../../services/records')  // 添加这行
 
 Page({
   data: {
@@ -30,7 +32,9 @@ Page({
     isChild: false,
     currentChild: null,
     childList: [],
-    familyList: []
+    familyList: [],
+    calendarData: [],
+    currentMonth: ''
   },
 
   async onLoad() {
@@ -50,10 +54,14 @@ Page({
     }
 
     await this.loadData()
+    // 初始化日历并加载记录
+    if (this.data.currentChild) {
+      this.initCalendarData()
+      await this.loadMonthRecords()
+    }
   },
 
   async onShow() {
-    // 每次显示页面时重新加载所有数据
     try {
       // 先清空当前积分，避免显示旧数据
       if (this.data.currentChild) {
@@ -64,6 +72,11 @@ Page({
       
       // 使用 loadData 统一加载最新数据
       await this.loadData()
+      
+      // 只重新加载月度记录，不重新初始化日历
+      if (this.data.currentChild) {
+        await this.loadMonthRecords()
+      }
       
       // 添加日志
       if (this.data.currentChild) {
@@ -127,6 +140,7 @@ Page({
           time: new Date().toISOString()
         })
       }
+
     } catch (err) {
       console.error('加载失败:', err)
       wx.showToast({
@@ -429,6 +443,156 @@ Page({
     
     wx.navigateTo({
       url: `/pages/child/edit/index?id=${this.data.currentChild._id}`
+    })
+  },
+
+  // 初始化日历数据
+  initCalendarData() {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = now.getMonth()
+    
+    // 设置当前月份显示
+    const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', 
+                         '七月', '八月', '九月', '十月', '十一月', '十二月']
+    this.setData({
+      currentMonth: monthNames[month]
+    })
+
+    // 获取当月第一天是周几
+    const firstDay = new Date(year, month, 1).getDay()
+    // 获取当月天数
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    
+    let calendarData = []
+    let week = []
+    
+    // 补充上月空白日期
+    for (let i = 0; i < firstDay; i++) {
+      week.push({ day: '' })
+    }
+    
+    // 填充当月日期
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = new Date(year, month, i)
+      const dateStr = formatDate(date)  // 使用导入的 formatDate
+      
+      week.push({
+        day: i,
+        date: dateStr,
+        isToday: isSameDay(date, new Date()),  // 使用导入的 isSameDay
+        hasRecords: false,
+        reward: 0,
+        penalty: 0
+      })
+      
+      if (week.length === 7) {
+        calendarData.push(week)
+        week = []
+      }
+    }
+    
+    // 补充下月空白日期
+    if (week.length > 0) {
+      while (week.length < 7) {
+        week.push({ day: '' })
+      }
+      calendarData.push(week)
+    }
+    
+    this.setData({ calendarData })
+  },
+
+  // 加载当月记录
+  async loadMonthRecords() {
+    try {
+      console.log('开始加载月度记录:', {
+        childId: this.data.currentChild._id,
+        childName: this.data.currentChild.name,
+        time: new Date().toISOString()
+      })
+
+      const records = await getMonthRecords(this.data.currentChild._id, new Date())
+      console.log('获取到月度记录:', {
+        recordCount: records.length,
+        records: records.map(r => ({
+          date: new Date(r.createTime).toLocaleDateString(),
+          type: r.type,
+          points: r.points,
+          isReward: r.isReward
+        }))
+      })
+
+      this.updateCalendarWithRecords(records)
+    } catch (err) {
+      console.error('加载记录失败:', err)
+    }
+  },
+
+  // 更新日历数据
+  updateCalendarWithRecords(records) {
+    const calendarData = this.data.calendarData.map(week => {
+      return week.map(day => {
+        if (!day.date) return day
+        
+        // 获取当天的记录
+        const dayRecords = records.filter(record => {
+          const recordDate = new Date(record.createTime)
+          return formatDate(recordDate) === day.date
+        })
+        
+        // 添加日志，只打印有记录的日期
+        if (dayRecords.length > 0) {
+          console.log('日期记录统计:', {
+            date: day.date,
+            recordCount: dayRecords.length,
+            records: dayRecords.map(r => ({
+              type: r.type,
+              points: r.points,
+              isReward: r.isReward,
+              ruleId: r.ruleId
+            }))
+          })
+        }
+
+        // 计算奖励和惩罚积分
+        const reward = dayRecords
+          .filter(r => r.type === 'reward')
+          .reduce((sum, r) => sum + r.points, 0)
+          
+        const penalty = dayRecords
+          .filter(r => {
+            // 使用 ruleId 字段来区分惩罚记录和兑换记录
+            return r.type === 'penalty' && r.ruleId
+          })
+          .reduce((sum, r) => sum + r.points, 0)
+        
+        return {
+          ...day,
+          hasRecords: dayRecords.length > 0,
+          reward: reward || 0,
+          penalty: penalty || 0
+        }
+      })
+    })
+    
+    this.setData({ calendarData })
+  },
+
+  // 点击日期
+  onDateClick(e) {
+    const { date } = e.currentTarget.dataset
+    if (!date) return
+    
+    console.log('点击日历日期:', {
+      date,
+      childId: this.data.currentChild._id,
+      childName: this.data.currentChild.name,
+      time: new Date().toISOString()
+    })
+    
+    wx.navigateTo({
+      url: `/pages/records/detail/index?date=${date}`
     })
   }
 })

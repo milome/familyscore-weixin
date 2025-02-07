@@ -16,7 +16,8 @@
     "pages/scratch/create/index",
     "pages/scratch/edit/index",
     "pages/child/edit/index",
-    "pages/family/manage/index"
+    "pages/family/manage/index",
+    "pages/records/detail/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

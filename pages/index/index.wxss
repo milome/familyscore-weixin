@@ -519,4 +519,84 @@
 .record-item .time {
   margin-right: 4rpx;  /* 与积分对齐 */
   white-space: nowrap;  /* 时间戳不换行 */
+}
+
+/* 日历样式 */
+.calendar-header {
+  display: flex;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--border-color);
+}
+
+.calendar-header .weekday {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.calendar-body {
+  padding: 12rpx 0;
+}
+
+.calendar-row {
+  display: flex;
+  padding: 6rpx 0;
+}
+
+.calendar-cell {
+  flex: 1;
+  height: 120rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12rpx;
+  position: relative;
+  background: rgba(0, 0, 0, 0.03);  /* 默认浅灰色背景 */
+}
+
+.calendar-cell .date {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.calendar-cell.today {
+  background: rgba(7, 193, 96, 0.1);
+  border-radius: 8rpx;
+}
+
+.calendar-cell .points {
+  font-size: 24rpx;
+  line-height: 1.2;
+}
+
+.calendar-cell .points.reward {
+  color: #ff4d4f;  /* 红色 */
+}
+
+.calendar-cell .points.penalty {
+  color: #52c41a;  /* 绿色 */
+}
+
+.calendar-cell .reward {
+  color: var(--success-color);
+}
+
+.calendar-cell .penalty {
+  color: var(--error-color);
+}
+
+/* 有记录的日期单元格 */
+.calendar-cell.has-records {
+  background: transparent;
+}
+
+/* 月份标题样式 */
+.month-title {
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--border-color);
 } 

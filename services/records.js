@@ -128,9 +128,71 @@ async function deleteRecord(recordId) {
   }
 }
 
+/**
+ * 获取指定月份的记录
+ * @param {string} childId - 孩子ID
+ * @param {Date} date - 日期对象
+ */
+async function getMonthRecords(childId, date) {
+  const year = date.getFullYear()
+  const month = date.getMonth()
+  const startDate = new Date(year, month, 1)
+  const endDate = new Date(year, month + 1, 0)
+
+  try {
+    // 先获取总数
+    const { total } = await db.collection('point_records')
+      .where({
+        childId,
+        createTime: _.gte(startDate).and(_.lte(endDate)),
+        isDeleted: false
+      })
+      .count()
+    
+    // 分批次获取所有数据
+    const batchSize = 20
+    const batchTimes = Math.ceil(total / batchSize)
+    const tasks = []
+    
+    for (let i = 0; i < batchTimes; i++) {
+      const promise = db.collection('point_records')
+        .where({
+          childId,
+          createTime: _.gte(startDate).and(_.lte(endDate)),
+          isDeleted: false
+        })
+        .skip(i * batchSize)
+        .limit(batchSize)
+        .get()
+      
+      tasks.push(promise)
+    }
+
+    // 等待所有查询完成
+    const results = await Promise.all(tasks)
+
+    // 合并查询结果
+    const data = results.reduce((acc, cur) => {
+      return acc.concat(cur.data)
+    }, [])
+
+    console.log('月度记录查询结果:', {
+      total,
+      batchTimes,
+      recordCount: data.length
+    })
+
+    return data
+  } catch (err) {
+    console.error('获取月度记录失败:', err)
+    throw err
+  }
+}
+
 module.exports = {
   addRecord,
   getRecordList,
   getRecentRecords,
-  deleteRecord
+  deleteRecord,
+  getMonthRecords
 } 
