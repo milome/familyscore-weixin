@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="header">
+    <text class="title">选择孩子</text>
+  </view>
+
+  <view class="content">
+    <view class="child-list">
+      <view 
+        class="child-item" 
+        wx:for="{{ children }}" 
+        wx:key="_id"
+        bindtap="selectChild"
+        data-id="{{ item._id }}"
+      >
+        <view class="avatar">
+          <image 
+            wx:if="{{ item.avatar }}" 
+            src="{{ item.avatar }}"
+            mode="aspectFill"
+          />
+          <text wx:else>{{ item.name[0] }}</text>
+        </view>
+        <text class="name">{{ item.name }}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <button class="add-btn" bindtap="addChild">添加孩子</button>
+  </view>
+</view> 
