@@ -159,10 +159,20 @@
       >
         <view class="record-list">
           <view class="record-item" wx:for="{{recentRecords}}" wx:key="_id">
-            <view class="text-avatar">{{item.memberName[0]}}</view>
+            <view class="avatar-wrapper">
+              <block wx:if="{{currentChild.avatar}}">
+                <image 
+                  class="avatar" 
+                  src="{{currentChild.avatar}}" 
+                  mode="aspectFill"
+                  binderror="onImageError"
+                />
+              </block>
+              <view wx:else class="text-avatar">{{currentChild.name[0]}}</view>
+            </view>
             <view class="content">
               <view class="title">
-                <text class="name">{{item.memberName}}</text>
+                <text class="name">{{currentChild.name}}</text>
                 <text class="points {{item.type === 'reward' ? 'plus' : 'minus'}}">
                   {{item.type === 'reward' ? '+' : '-'}}{{item.points}}
                 </text>
