@@ -99,29 +99,22 @@ Page({
       const currentChild = await getCurrentChild()
       
       if (currentChild) {
+        console.log('loadData - 原始头像URL:', {
+          avatar: currentChild.avatar,
+          type: typeof currentChild.avatar
+        })
+
         // 获取最新积分
         const { points } = await getChildPoints(currentChild._id)
 
         // 处理头像URL
         let avatarTemp = currentChild.avatar || ''
-        if (avatarTemp && avatarTemp.startsWith('cloud://')) {
-          try {
-            const { fileList } = await wx.cloud.getTempFileURL({
-              fileList: [avatarTemp]
-            })
-            currentChild.avatar = fileList[0].tempFileURL
-          } catch (err) {
-            console.error('获取头像临时链接失败:', err)
-            currentChild.avatar = ''
-          }
+        if (avatarTemp) {
+          console.log('loadData - 使用头像URL:', avatarTemp)
         }
-        
-        console.log('首页 loadData 获取积分:', { 
-          childId: currentChild._id, 
-          name: currentChild.name,
-          points 
-        })
-        
+
+        console.log('loadData - 最终头像URL:', currentChild.avatar)
+
         // 获取孩子列表
         const { data: childList } = await userService.getChildList()
         

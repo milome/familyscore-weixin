@@ -97,11 +97,23 @@ Page({
       })
 
       if (tempFilePaths && tempFilePaths[0]) {
-        // 显示临时头像
-        this.setData({ avatar: tempFilePaths[0] })
+        console.log('chooseAvatar - 选择的临时文件:', tempFilePaths[0])
+        
+        // 上传到云存储，使用正确的云环境ID
+        const { fileID } = await wx.cloud.uploadFile({
+          cloudPath: `children/avatar/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`,
+          filePath: tempFilePaths[0]
+        })
+        console.log('chooseAvatar - 上传后的fileID:', fileID)
+        
+        this.setData({ avatar: fileID })
       }
     } catch (err) {
       console.error('选择头像失败:', err)
+      wx.showToast({
+        title: '选择头像失败',
+        icon: 'none'
+      })
     }
   },
 
@@ -132,6 +144,8 @@ Page({
         birthday,
         avatar  // 使用 avatar 字段
       }
+
+      console.log('handleSubmit - 准备保存的头像URL:', data.avatar)
 
       if (this.data.id) {
         // 更新

@@ -48,7 +48,8 @@ async function getCurrentChild() {
       
       // 处理头像URL
       if (data.avatar && data.avatar.startsWith('cloud://')) {
-        try {
+        console.log('getCurrentChild - 从数据库获取的头像:', data.avatar)
+        if (data.avatar) {
           const { fileList } = await wx.cloud.getTempFileURL({
             fileList: [data.avatar]
           })
@@ -59,8 +60,6 @@ async function getCurrentChild() {
             错误信息: fileList[0].errMsg
           })
           data.avatar = fileList[0].tempFileURL
-        } catch (err) {
-          console.error('获取头像临时链接失败:', err)
         }
       }
 
