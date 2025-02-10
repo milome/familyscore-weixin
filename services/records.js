@@ -45,23 +45,39 @@ async function addRecord(data) {
  */
 async function getRecordList(childId, options = {}) {
   try {
+    const db = wx.cloud.database()
+    const _ = db.command
+    
     const query = {
       childId,
-      isDeleted: _.neq(true)
+      isDeleted: false,  // 使用等值查询替代 neq
     }
-
+    
+    // 添加日期筛选
     if (options.startDate && options.endDate) {
-      query.date = _.gte(options.startDate).and(_.lte(options.endDate))
+      query.createTime = _.gte(new Date(options.startDate))
+        .and(_.lte(new Date(options.endDate)))
     }
-
-    const { data } = await collection
+    
+    // 添加类型筛选
+    if (options.type) {
+      query.type = options.type
+    }
+    
+    const { data } = await db.collection('point_records')
       .where(query)
-      .orderBy('date', 'desc')
+      // 按照索引建议的顺序
+      .orderBy('childId', 'asc')
+      .orderBy('isDeleted', 'asc')
+      .orderBy('createTime', 'asc')
       .get()
-
+    
+    // 在内存中反转数组以获得降序效果
+    const sortedData = data.reverse()
+    
     return {
       success: true,
-      data
+      data: sortedData
     }
   } catch (err) {
     console.error('获取积分记录失败:', err)
@@ -77,7 +93,7 @@ async function getRecentRecords(childId, limit = 5) {
     const { data } = await collection
       .where({
         childId,
-        isDeleted: _.neq(true)
+        isDeleted: false
       })
       .orderBy('createTime', 'desc')
       .limit(limit)
@@ -130,8 +146,6 @@ async function deleteRecord(recordId) {
 
 /**
  * 获取指定月份的记录
- * @param {string} childId - 孩子ID
- * @param {Date} date - 日期对象
  */
 async function getMonthRecords(childId, date) {
   const year = date.getFullYear()
@@ -144,8 +158,8 @@ async function getMonthRecords(childId, date) {
     const { total } = await db.collection('point_records')
       .where({
         childId,
-        createTime: _.gte(startDate).and(_.lte(endDate)),
-        isDeleted: false
+        isDeleted: false,
+        createTime: _.gte(startDate).and(_.lte(endDate))
       })
       .count()
     
@@ -158,9 +172,11 @@ async function getMonthRecords(childId, date) {
       const promise = db.collection('point_records')
         .where({
           childId,
-          createTime: _.gte(startDate).and(_.lte(endDate)),
-          isDeleted: false
+          isDeleted: false,
+          createTime: _.gte(startDate).and(_.lte(endDate))
         })
+        // 使用降序索引
+        .orderBy('createTime', 'desc')
         .skip(i * batchSize)
         .limit(batchSize)
         .get()

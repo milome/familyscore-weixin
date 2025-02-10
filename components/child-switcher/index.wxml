@@ -1,10 +1,14 @@
 <!-- 切换按钮 -->
 <view class="switcher" bindtap="openSwitcher">
-  <image 
-    class="avatar" 
-    src="{{currentChild.avatar || '/images/default-avatar.png'}}" 
-    mode="aspectFill"
-  />
+  <block wx:if="{{currentChild.avatar}}">
+    <image 
+      class="avatar" 
+      src="{{currentChild.avatar}}" 
+      mode="aspectFill"
+      binderror="onImageError"
+    />
+  </block>
+  <view wx:else class="text-avatar">{{currentChild.name[0]}}</view>
   <text class="name">{{currentChild.name}}</text>
   <text class="icon">▼</text>
 </view>
@@ -33,11 +37,15 @@
         data-id="{{item._id}}"
         bindtap="switchChild"
       >
-        <image 
-          class="avatar" 
-          src="{{item.avatar || '/images/default-avatar.png'}}" 
-          mode="aspectFill"
-        />
+        <block wx:if="{{item.avatar}}">
+          <image 
+            class="avatar" 
+            src="{{item.avatar}}" 
+            mode="aspectFill"
+            binderror="onImageError"
+          />
+        </block>
+        <view wx:else class="text-avatar">{{item.name[0]}}</view>
         <view class="info">
           <text class="name">{{item.name}}</text>
           <text class="age">{{item.age}}</text>

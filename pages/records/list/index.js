@@ -1,28 +1,41 @@
 Page({
   data: {
     records: [],
-    loading: false,
+    loading: true,
     hasMore: true,
     pageSize: 20,
     filter: {
       startDate: '',
       endDate: '',
       type: ''
-    }
+    },
+    currentChild: null
   },
 
-  onLoad() {
-    // 设置默认日期范围为本月
-    const now = new Date()
-    const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+  async onLoad(options) {
+    // 获取当前选中的孩子
+    const currentChildId = wx.getStorageSync('currentChildId')
+    if (!currentChildId) {
+      wx.showToast({
+        title: '请先选择孩子',
+        icon: 'none'
+      })
+      return
+    }
     
-    this.setData({
-      'filter.startDate': startDate.toISOString().split('T')[0],
-      'filter.endDate': endDate.toISOString().split('T')[0]
-    })
+    // 获取孩子信息
+    const db = wx.cloud.database()
+    const { data: child } = await db.collection('children')
+      .doc(currentChildId)
+      .field({
+        _id: true,
+        name: true,
+        avatar: true
+      })
+      .get()
     
-    this.loadRecords()
+    this.setData({ currentChild: child })
+    await this.loadRecords()
   },
 
   onPullDownRefresh() {
@@ -48,72 +61,55 @@ Page({
   },
 
   async loadRecords() {
-    if (this.data.loading || !this.data.hasMore) return
-    this.setData({ loading: true })
-
     try {
+      this.setData({ loading: true })
+      
       const db = wx.cloud.database()
       const _ = db.command
+      
+      // 确保有当前孩子
+      if (!this.data.currentChild?._id) {
+        console.log('loadRecords: 没有当前孩子')
+        return
+      }
+      
+      // 处理头像URL
+      if (this.data.currentChild.avatar && this.data.currentChild.avatar.startsWith('cloud://')) {
+        try {
+          const { fileList } = await wx.cloud.getTempFileURL({
+            fileList: [this.data.currentChild.avatar]
+          })
+          this.setData({
+            'currentChild.avatar': fileList[0].tempFileURL
+          })
+        } catch (err) {
+          console.error('获取头像临时链接失败:', err)
+        }
+      }
+
       const query = {
+        childId: this.data.currentChild._id,  // 只查询当前孩子的记录
         isDeleted: false
-      }
-
-      // 添加日期筛选
-      if (this.data.filter.startDate && this.data.filter.endDate) {
-        query.createTime = _.gte(new Date(this.data.filter.startDate))
-          .and(_.lte(new Date(this.data.filter.endDate)))
-      }
-
-      // 添加类型筛选
-      if (this.data.filter.type) {
-        query.type = this.data.filter.type
       }
 
       const { data } = await db.collection('point_records')
         .where(query)
         .orderBy('createTime', 'desc')
-        .skip(this.data.records.length)
-        .limit(this.data.pageSize)
-        .get()
-
-      console.log('原始记录数据:', data)
-
-      // 获取所有涉及的 childId
-      const childIds = [...new Set(data.map(record => record.childId))]
-      
-      // 批量查询孩子信息
-      const { data: children } = await db.collection('children')
-        .where({
-          _id: _.in(childIds)
-        })
         .get()
       
-      // 创建孩子信息的映射
-      const childMap = {}
-      children.forEach(child => {
-        childMap[child._id] = child
-      })
-
-      const records = data.map(record => {
-        console.log('处理单条记录:', record)
-        const child = childMap[record.childId] || {}
-        return {
-          ...record,
-          childName: child.name || '未知',
-          childAvatar: child.avatar,
-          createTime: this.formatTime(record.createTime)
-        }
-      })
-
-      console.log('处理后的记录:', records)
-
+      // 处理记录，使用当前孩子信息
+      const processedRecords = data.map(record => ({
+        ...record,
+        childName: this.data.currentChild.name,
+        childAvatar: this.data.currentChild.avatar,
+        createTime: this.formatTime(record.createTime)  // 格式化时间显示
+      }))
+      
       this.setData({
-        records: [...this.data.records, ...records],
-        hasMore: data.length === this.data.pageSize
+        records: processedRecords,
+        loading: false
       })
-
-      console.log('当前所有记录:', this.data.records)
-
+      
     } catch (err) {
       console.error('加载记录失败:', err)
       wx.showToast({
@@ -122,7 +118,6 @@ Page({
       })
     } finally {
       this.setData({ loading: false })
-      wx.stopPullDownRefresh()
     }
   },
 
@@ -166,9 +161,14 @@ Page({
     })
   },
 
-  formatTime(date) {
-    date = new Date(date)
-    return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${date.getMinutes()}`
+  formatTime(timestamp) {
+    if (!timestamp) return ''
+    const date = new Date(timestamp)
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    const hours = date.getHours().toString().padStart(2, '0')
+    const minutes = date.getMinutes().toString().padStart(2, '0')
+    return `${month}月${day}日 ${hours}:${minutes}`
   },
 
   goBack() {

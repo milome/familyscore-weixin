@@ -36,7 +36,15 @@
   <block wx:else>
     <!-- 孩子信息 -->
     <view class="child-info" bindtap="goToEditChild">
-      <view class="text-avatar">{{currentChild.name[0]}}</view>
+      <block wx:if="{{currentChild.avatar}}">
+        <image 
+          class="avatar" 
+          src="{{currentChild.avatar}}" 
+          mode="aspectFill"
+          binderror="onImageError"
+        />
+      </block>
+      <view wx:else class="text-avatar">{{currentChild.name[0]}}</view>
       <view class="info">
         <text class="name">{{currentChild.name}}</text>
         <text class="age">{{currentChild.age}}</text>

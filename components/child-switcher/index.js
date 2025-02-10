@@ -3,6 +3,19 @@ Component({
     currentChild: {
       type: Object,
       value: null
+    },
+    childList: {
+      type: Array,
+      value: []
+    }
+  },
+
+  lifetimes: {
+    attached() {
+      console.log('child-switcher attached:', {
+        currentChild: this.properties.currentChild,
+        childList: this.properties.childList
+      })
     }
   },
 
@@ -43,6 +56,14 @@ Component({
       } finally {
         wx.hideLoading()
       }
+    },
+
+    onImageError(e) {
+      console.error('头像加载失败:', {
+        url: e.detail.errMsg,
+        currentChildAvatar: this.data.currentChild?.avatar,
+        childListAvatars: this.data.childList?.map(c => c.avatar)
+      })
     }
   }
 }) 

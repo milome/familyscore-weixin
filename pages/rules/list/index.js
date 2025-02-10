@@ -77,7 +77,7 @@ Page({
       const db = wx.cloud.database()
       const _ = db.command
       const query = {
-        isDeleted: _.neq(true)
+        isDeleted: false,  // 使用等值查询替代 neq
       }
 
       const { data } = await db.collection('point_rules')

@@ -213,4 +213,12 @@
 
 .fab:active {
   transform: scale(0.95);
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+  border: 1px solid #eee;
 } 

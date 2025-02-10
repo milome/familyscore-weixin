@@ -36,7 +36,18 @@
   <!-- 记录列表 -->
   <view class="record-list">
     <view class="record-item" wx:for="{{records}}" wx:key="_id">
-      <view class="text-avatar">{{item.childName[0]}}</view>
+      <view class="user-info">
+        <block wx:if="{{currentChild.avatar}}">
+          <image 
+            class="avatar" 
+            src="{{currentChild.avatar}}" 
+            mode="aspectFill"
+            binderror="onImageError"
+          />
+        </block>
+        <view wx:else class="text-avatar">{{currentChild.name[0]}}</view>
+        <text class="name">{{item.memberName}}</text>
+      </view>
       <view class="content">
         <view class="title">
           <text class="name">{{item.childName}}</text>

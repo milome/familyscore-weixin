@@ -122,7 +122,7 @@ async function addMember(type, data) {
     const { total } = await db.collection(`${type}_members`)
       .where({
         name: data.name,
-        isDeleted: _.neq(true)
+        isDeleted: false,  // 使用等值查询替代 neq
       })
       .count()
 

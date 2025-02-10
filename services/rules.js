@@ -9,7 +9,7 @@ async function getRuleList() {
   try {
     const { data } = await collection
       .where({
-        isDeleted: _.neq(true)
+        isDeleted: false,  // 使用等值查询替代 neq
       })
       .orderBy('createTime', 'desc')
       .get()

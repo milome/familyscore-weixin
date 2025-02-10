@@ -12,7 +12,7 @@ async function getCurrentChild() {
       // 如果没有选中的孩子，尝试获取第一个孩子
       const { data } = await db.collection('children')
         .where({
-          isDeleted: _.neq(true)
+          isDeleted: false
         })
         .orderBy('createTime', 'desc')
         .limit(1)
@@ -21,6 +21,11 @@ async function getCurrentChild() {
       if (data && data.length > 0) {
         // 找到第一个孩子，设置为当前选中
         const child = data[0]
+        console.log('getCurrentChild - 第一个孩子:', {
+          id: child._id,
+          name: child.name,
+          avatar: child.avatar
+        })
         await setCurrentChild(child._id)
         return child
       }
@@ -41,6 +46,31 @@ async function getCurrentChild() {
         })
         .get()
       
+      // 处理头像URL
+      if (data.avatar && data.avatar.startsWith('cloud://')) {
+        try {
+          const { fileList } = await wx.cloud.getTempFileURL({
+            fileList: [data.avatar]
+          })
+          console.log('头像临时URL转换:', {
+            原始fileID: data.avatar,
+            临时URL: fileList[0].tempFileURL,
+            状态: fileList[0].status,
+            错误信息: fileList[0].errMsg
+          })
+          data.avatar = fileList[0].tempFileURL
+        } catch (err) {
+          console.error('获取头像临时链接失败:', err)
+        }
+      }
+
+      console.log('getCurrentChild - 获取指定孩子:', {
+        id: data._id,
+        name: data.name,
+        avatar: data.avatar,
+        avatarType: typeof data.avatar,
+        avatarLength: data.avatar?.length
+      })
       return data
     } catch (err) {
       console.error('获取指定孩子失败，尝试获取第一个孩子:', err)
@@ -48,7 +78,7 @@ async function getCurrentChild() {
       // 如果获取指定ID的孩子失败，尝试获取第一个孩子
       const { data } = await db.collection('children')
         .where({
-          isDeleted: _.neq(true)
+          isDeleted: false
         })
         .orderBy('createTime', 'desc')
         .limit(1)
@@ -90,7 +120,7 @@ async function getChildList() {
   try {
     const { data } = await db.collection('children')
       .where({
-        isDeleted: _.neq(true)
+        isDeleted: false
       })
       .orderBy('updateTime', 'desc')
       .field({
@@ -103,9 +133,41 @@ async function getChildList() {
       })
       .get()
     
+    // 处理头像URL
+    const processedData = await Promise.all(data.map(async (child) => {
+      if (child.avatar && child.avatar.startsWith('cloud://')) {
+        try {
+          const { fileList } = await wx.cloud.getTempFileURL({
+            fileList: [child.avatar]
+          })
+          console.log('列表头像临时URL转换:', {
+            childId: child._id,
+            childName: child.name,
+            原始fileID: child.avatar,
+            临时URL: fileList[0].tempFileURL,
+            状态: fileList[0].status,
+            错误信息: fileList[0].errMsg
+          })
+          return {
+            ...child,
+            avatar: fileList[0].tempFileURL
+          }
+        } catch (err) {
+          console.error('获取头像临时链接失败:', {
+            childId: child._id,
+            childName: child.name,
+            原始fileID: child.avatar,
+            错误: err
+          })
+          return child
+        }
+      }
+      return child
+    }))
+    
     return {
       success: true,
-      data
+      data: processedData
     }
   } catch (err) {
     console.error('获取孩子列表失败:', err)
@@ -373,7 +435,7 @@ async function checkChildExists(name, birthday, gender) {
         name,
         birthday,
         gender,
-        isDeleted: _.neq(true)
+        isDeleted: false
       })
       .count()
     
@@ -428,46 +490,53 @@ async function addChild(data) {
 /**
  * 更新孩子信息
  */
-async function updateChild(id, childData) {
+async function updateChild(id, data) {
   try {
-    // 如果要更新姓名或生日，需要检查是否与其他孩子冲突
-    if (childData.name || childData.birthday) {
-      const child = await db.collection('children').doc(id).get()
-      const name = childData.name || child.data.name
-      const birthday = childData.birthday || child.data.birthday
-      
-      // 检查是否与其他孩子冲突
-      const { total } = await db.collection('children')
-        .where({
-          _id: _.neq(id),
-          name,
-          birthday,
-          isDeleted: _.neq(true)
-        })
-        .count()
-      
-      if (total > 0) {
-        return {
-          success: false,
-          error: 'CHILD_EXISTS',
-          message: '该孩子信息已存在'
-        }
-      }
+    // 检查id是否存在
+    if (!id) {
+      throw new Error('Missing child id')
     }
 
-    // 更新孩子信息
+    // 构建更新数据
+    const updateData = {
+      ...data,
+      updateTime: db.serverDate()
+    }
+
+    // 如果有新头像，先上传
+    if (data.avatar && data.avatar.startsWith('wxfile://')) {
+      const fileID = await uploadFile(data.avatar)
+      updateData.avatar = fileID
+    }
+
+    // 更新数据库
     await db.collection('children').doc(id).update({
-      data: {
-        ...childData,
-        updateTime: db.serverDate()
-      }
+      data: updateData
     })
 
-    return {
-      success: true
-    }
+    // 获取更新后的完整数据
+    const { data: updatedChild } = await db.collection('children')
+      .doc(id)
+      .get()
+
+    return updatedChild
+
   } catch (err) {
     console.error('更新孩子信息失败:', err)
+    throw err
+  }
+}
+
+// 上传文件
+async function uploadFile(filePath) {
+  try {
+    const { fileID } = await wx.cloud.uploadFile({
+      cloudPath: `children/avatar/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`,
+      filePath: filePath
+    })
+    return fileID
+  } catch (err) {
+    console.error('上传文件失败:', err)
     throw err
   }
 }
@@ -493,7 +562,7 @@ async function getChildFamily(childId) {
     const { data: relations } = await db.collection('relations')
       .where({
         childId,
-        isDeleted: _.neq(true)
+        isDeleted: false
       })
       .get()
 
@@ -509,7 +578,7 @@ async function getChildFamily(childId) {
     const { data: members } = await db.collection('family_members')
       .where({
         _id: _.in(memberIds),
-        isDeleted: _.neq(true)
+        isDeleted: false
       })
       .get()
 
@@ -545,7 +614,7 @@ async function addFamilyRelation(childId, memberId, role) {
       .where({
         childId,
         memberId,
-        isDeleted: _.neq(true)
+        isDeleted: false
       })
       .count()
 

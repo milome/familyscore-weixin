@@ -9,59 +9,18 @@ Page({
     birthday: '',
     loading: false,
     mode: 'add',
-    today: new Date().toISOString().split('T')[0] // 获取今天的日期作为日期选择器的结束日期
+    today: new Date().toISOString().split('T')[0], // 获取今天的日期作为日期选择器的结束日期
+    childId: ''
   },
 
   async onLoad(options) {
-    try {
-      if (options.id) {
-        this.setData({ 
-          loading: true,
-          mode: 'edit'  // 设置为编辑模式
-        })
-        
-        // 获取孩子详情
-        const child = await userService.getChildDetail(options.id)
-        
-        if (!child) {
-          wx.showToast({
-            title: '找不到孩子信息',
-            icon: 'error'
-          })
-          setTimeout(() => {
-            wx.navigateBack()
-          }, 1500)
-          return
-        }
-
-        console.log('加载孩子详情:', {
-          id: options.id,
-          mode: 'edit',
-          child
-        })
-
-        this.setData({
-          id: options.id,
-          name: child.name || '',
-          birthday: child.birthday || '',
-          gender: child.gender || 'unknown',
-          loading: false
-        })
-      } else {
-        // 新增模式
-        this.setData({ mode: 'add' })
-      }
-    } catch (err) {
-      console.error('加载孩子信息失败:', err)
-      wx.showToast({
-        title: '加载失败',
-        icon: 'error'
+    const { id } = options
+    if (id) {
+      this.setData({ 
+        mode: 'edit',
+        id: id  // 确保正确设置id
       })
-      setTimeout(() => {
-        wx.navigateBack()
-      }, 1500)
-    } finally {
-      this.setData({ loading: false })
+      await this.loadChildDetail(id)
     }
   },
 
@@ -69,15 +28,35 @@ Page({
   async loadChildDetail(id) {
     try {
       this.setData({ loading: true })
-      const { data } = await userService.getChildDetail(id)
+      
+      const db = wx.cloud.database()
+      const { data: child } = await db.collection('children')
+        .doc(id)
+        .get()
+      
+      // 获取最新的头像临时URL
+      let avatarTemp = child.avatar || ''  // 使用 avatar 字段
+      if (avatarTemp && avatarTemp.startsWith('cloud://')) {
+        try {
+          const { fileList } = await wx.cloud.getTempFileURL({
+            fileList: [avatarTemp]
+          })
+          avatarTemp = fileList[0].tempFileURL
+        } catch (err) {
+          console.error('获取头像临时链接失败:', err)
+        }
+      }
+
       this.setData({
-        name: data.name,
-        avatar: data.avatar,
-        gender: data.gender,
-        birthday: data.birthday
+        name: child.name,
+        avatar: avatarTemp,
+        gender: child.gender,
+        birthday: child.birthday,
+        loading: false
       })
+
     } catch (err) {
-      console.error('加载失败:', err)
+      console.error('加载孩子详情失败:', err)
       wx.showToast({
         title: '加载失败',
         icon: 'error'
@@ -118,84 +97,48 @@ Page({
       })
 
       if (tempFilePaths && tempFilePaths[0]) {
-        // 上传头像到云存储
-        wx.showLoading({ title: '上传中...' })
-        const { fileID } = await wx.cloud.uploadFile({
-          cloudPath: `avatars/${Date.now()}.jpg`,
-          filePath: tempFilePaths[0]
-        })
-        
-        this.setData({ avatar: fileID })
+        // 显示临时头像
+        this.setData({ avatar: tempFilePaths[0] })
       }
     } catch (err) {
       console.error('选择头像失败:', err)
-      wx.showToast({
-        title: '选择头像失败',
-        icon: 'none'
-      })
-    } finally {
-      wx.hideLoading()
     }
+  },
+
+  onImageError(e) {
+    console.error('头像加载失败:', e.detail)
+    this.setData({ avatar: '' })  // 清空头像，显示文本头像
   },
 
   // 保存
   async onSave() {
-    const { name, avatar, gender, birthday, mode, id } = this.data
-    
-    if (!name.trim()) {
-      wx.showToast({
-        title: '请输入姓名',
-        icon: 'none'
-      })
-      return
-    }
-
-    if (!birthday) {
-      wx.showToast({
-        title: '请选择生日',
-        icon: 'none'
-      })
-      return
-    }
-
-    if (!gender) {
-      wx.showToast({
-        title: '请选择性别',
-        icon: 'none'
-      })
-      return
-    }
-
     try {
       this.setData({ loading: true })
 
-      const childData = {
-        name: name.trim(),
+      const { name, avatar, gender, birthday } = this.data
+      
+      // 表单验证
+      if (!name) {
+        wx.showToast({
+          title: '请输入姓名',
+          icon: 'none'
+        })
+        return
+      }
+
+      const data = {
+        name,
         gender,
         birthday,
-        avatar: avatar || ''
+        avatar  // 使用 avatar 字段
       }
 
-      let result
-      if (mode === 'add') {
-        result = await userService.addChild(childData)
+      if (this.data.id) {
+        // 更新
+        await userService.updateChild(this.data.id, data)
       } else {
-        result = await userService.updateChild(id, childData)
-      }
-
-      if (!result.success) {
-        if (result.error === 'CHILD_EXISTS') {
-          wx.showToast({
-            title: result.message,
-            icon: 'none'
-          })
-        } else {
-          wx.showToast({
-            title: '保存失败',
-            icon: 'error'
-          })
-        }
-        return
+        // 新增
+        await userService.addChild(data)
       }
 
       wx.showToast({
@@ -210,7 +153,7 @@ Page({
     } catch (err) {
       console.error('保存失败:', err)
       wx.showToast({
-        title: '保存失败',
+        title: err.message || '保存失败',
         icon: 'error'
       })
     } finally {

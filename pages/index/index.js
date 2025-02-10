@@ -101,6 +101,21 @@ Page({
       if (currentChild) {
         // 获取最新积分
         const { points } = await getChildPoints(currentChild._id)
+
+        // 处理头像URL
+        let avatarTemp = currentChild.avatar || ''
+        if (avatarTemp && avatarTemp.startsWith('cloud://')) {
+          try {
+            const { fileList } = await wx.cloud.getTempFileURL({
+              fileList: [avatarTemp]
+            })
+            currentChild.avatar = fileList[0].tempFileURL
+          } catch (err) {
+            console.error('获取头像临时链接失败:', err)
+            currentChild.avatar = ''
+          }
+        }
+        
         console.log('首页 loadData 获取积分:', { 
           childId: currentChild._id, 
           name: currentChild.name,
@@ -111,9 +126,10 @@ Page({
         const { data: childList } = await userService.getChildList()
         
         this.setData({
+          loading: false,
           currentChild: {
             ...currentChild,
-            points  // 使用从 point_records 获取的最新积分
+            points
           },
           childList: childList.map(child => {
             if (child._id === currentChild._id) {
@@ -138,6 +154,11 @@ Page({
           points,
           recentRecords: this.data.recentRecords.length,
           time: new Date().toISOString()
+        })
+      } else {
+        this.setData({ 
+          loading: false,
+          currentChild: null 
         })
       }
 
