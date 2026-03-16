@@ -2,6 +2,23 @@
 
 本文档介绍项目的持续集成和持续部署 (CI/CD) 配置。
 
+## 分支策略
+
+项目采用以下分支策略：
+
+| 分支 | 说明 | 保护规则 |
+|------|------|----------|
+| `master` | 主分支，生产环境代码 | 需要 PR 审核，CI 通过才能合并 |
+| `dev` | 开发分支，日常开发 | 需要 CI 通过，可直接推送 |
+
+### 工作流程
+
+1. **日常开发**: 在 `dev` 分支上进行开发
+2. **功能完成**: 创建 PR 从 `dev` 合并到 `master`
+3. **代码审查**: 需要至少 1 人审核通过
+4. **CI 检查**: 所有检查通过后才能合并
+5. **自动部署**: 合并到 `master` 后自动触发部署
+
 ## 概述
 
 项目使用 GitHub Actions 作为 CI/CD 平台，自动化以下流程：
@@ -15,8 +32,8 @@
 ### 1. CI 工作流 (`.github/workflows/ci.yml`)
 
 **触发条件:**
-- Push 到 master、main、develop 分支
-- Pull Request 到 master、main 分支
+- Push 到 master、dev 分支
+- Pull Request 到 master 分支
 
 **任务:**
 
@@ -33,7 +50,7 @@
 ### 2. CD 工作流 (`.github/workflows/cd.yml`)
 
 **触发条件:**
-- Push 到 master、main 分支
+- Push 到 master 分支
 - 推送版本标签 (v*)
 
 **任务:**
@@ -50,8 +67,8 @@
 ### 3. Code Quality 工作流 (`.github/workflows/code-quality.yml`)
 
 **触发条件:**
-- Push 到 master、main、develop 分支
-- Pull Request 到 master、main 分支
+- Push 到 master、dev 分支
+- Pull Request 到 master 分支
 - 每周定时运行（周一早上 9 点）
 
 **任务:**

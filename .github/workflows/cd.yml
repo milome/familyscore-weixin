@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [ master ]
     tags:
       - 'v*'
 
@@ -10,7 +10,7 @@ jobs:
   deploy-cloudfunctions:
     name: Deploy Cloud Functions
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     
     steps:
     - name: Checkout code
