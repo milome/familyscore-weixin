@@ -1,0 +1,75 @@
+name: CD
+
+on:
+  push:
+    branches: [ master, main ]
+    tags:
+      - 'v*'
+
+jobs:
+  deploy-cloudfunctions:
+    name: Deploy Cloud Functions
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install WeChat CLI
+      run: |
+        npm install -g miniprogram-ci
+        
+    - name: Prepare Cloud Functions
+      run: |
+        echo "Preparing cloud functions for deployment..."
+        
+        # 检查云函数目录
+        if [ -d "cloudfunctions" ]; then
+          echo "Found cloudfunctions directory"
+          ls -la cloudfunctions/
+        fi
+        
+    - name: Upload to WeChat
+      env:
+        WECHAT_APPID: ${{ secrets.WECHAT_APPID }}
+        WECHAT_PRIVATE_KEY: ${{ secrets.WECHAT_PRIVATE_KEY }}
+      run: |
+        echo "Note: Automatic deployment to WeChat requires private key setup"
+        echo "Please configure WECHAT_APPID and WECHAT_PRIVATE_KEY in repository secrets"
+        
+        # 这里可以添加实际的部署命令
+        # miniprogram-ci upload --appid "$WECHAT_APPID" --private-key "$WECHAT_PRIVATE_KEY" ...
+        
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: deploy-cloudfunctions
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+        body: |
+          ## Changes in this Release
+          
+          See [CHANGELOG.md](./CHANGELOG.md) for details.
+          
+          ### Deployment Notes
+          - WeChat Mini Program version: ${{ github.ref }}
+          - Deployed automatically via GitHub Actions

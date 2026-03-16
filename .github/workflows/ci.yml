@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  lint:
+    name: Code Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm ci
+        fi
+        
+    - name: Run ESLint
+      run: |
+        if [ -f package.json ] && npm ls eslint >/dev/null 2>&1; then
+          npm run lint
+        else
+          echo "No ESLint configured, skipping..."
+        fi
+        
+    - name: Check code style
+      run: |
+        # 检查文件命名规范
+        echo "Checking file naming conventions..."
+        
+        # 检查是否有不符合规范的命名
+        invalid_files=$(find . -type f \( -name "*.js" -o -name "*.json" -o -name "*.wxml" -o -name "*.wxss" \) | grep -E "[A-Z]" | grep -v node_modules | grep -v ".git" || true)
+        
+        if [ -n "$invalid_files" ]; then
+          echo "Warning: Found files with uppercase letters:"
+          echo "$invalid_files"
+        fi
+        
+  validate:
+    name: Validate Config
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Validate JSON files
+      run: |
+        echo "Validating JSON files..."
+        
+        # 检查所有 JSON 文件是否有效
+        find . -name "*.json" -not -path "./node_modules/*" -not -path "./.git/*" | while read file; do
+          if ! jq empty "$file" 2>/dev/null; then
+            echo "Invalid JSON: $file"
+            exit 1
+          fi
+        done
+        
+        echo "All JSON files are valid!"
+        
+    - name: Validate WeChat Mini Program config
+      run: |
+        echo "Validating WeChat Mini Program configuration..."
+        
+        # 检查必要的文件是否存在
+        required_files=("app.json" "app.js" "app.wxss" "project.config.json")
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "Missing required file: $file"
+            exit 1
+          fi
+        done
+        
+        # 验证 app.json 结构
+        if ! jq -e '.pages' app.json >/dev/null 2>&1; then
+          echo "Invalid app.json: missing pages field"
+          exit 1
+        fi
+        
+        echo "WeChat Mini Program configuration is valid!"
+        
+    - name: Check file structure
+      run: |
+        echo "Checking project structure..."
+        
+        # 检查必要的目录
+        required_dirs=("pages" "components")
+        for dir in "${required_dirs[@]}"; do
+          if [ ! -d "$dir" ]; then
+            echo "Missing required directory: $dir"
+            exit 1
+          fi
+        done
+        
+        echo "Project structure is valid!"

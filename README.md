@@ -1,5 +1,9 @@
 # 家庭积分管理小程序
 
+[![CI](https://github.com/milome/familyscore-weixin/actions/workflows/ci.yml/badge.svg)](https://github.com/milome/familyscore-weixin/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/milome/familyscore-weixin/actions/workflows/code-quality.yml/badge.svg)](https://github.com/milome/familyscore-weixin/actions/workflows/code-quality.yml)
+[![CD](https://github.com/milome/familyscore-weixin/actions/workflows/cd.yml/badge.svg)](https://github.com/milome/familyscore-weixin/actions/workflows/cd.yml)
+
 一个用于管理家庭成员积分的微信小程序。
 
 ## 功能特性

@@ -1,0 +1,119 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main ]
+  schedule:
+    # 每周一早上 9 点运行
+    - cron: '0 9 * * 1'
+
+jobs:
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Run npm audit
+      run: |
+        if [ -f package.json ]; then
+          npm audit --audit-level=moderate || true
+        else
+          echo "No package.json found, skipping npm audit"
+        fi
+        
+    - name: Check for secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+        extra_args: --debug --only-verified
+        
+  duplicate-code:
+    name: Duplicate Code Detection
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check for duplicates
+      run: |
+        echo "Checking for duplicate code..."
+        
+        # 简单的重复代码检测
+        # 查找相似的 JavaScript 文件
+        find . -name "*.js" -not -path "./node_modules/*" -not -path "./.git/*" | head -20 | while read file; do
+          # 计算文件哈希
+          md5sum "$file" >> /tmp/file_hashes.txt
+        done
+        
+        # 检查是否有重复的文件
+        if [ -f /tmp/file_hashes.txt ]; then
+          duplicates=$(sort /tmp/file_hashes.txt | uniq -d)
+          if [ -n "$duplicates" ]; then
+            echo "Found potentially duplicate files:"
+            echo "$duplicates"
+          else
+            echo "No duplicate files found"
+          fi
+        fi
+        
+  documentation:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check documentation
+      run: |
+        echo "Checking documentation..."
+        
+        # 检查必要的文档文件
+        required_docs=("README.md" "docs/README.md")
+        for doc in "${required_docs[@]}"; do
+          if [ -f "$doc" ]; then
+            echo "✓ Found $doc"
+          else
+            echo "✗ Missing $doc"
+          fi
+        done
+        
+        # 检查文档是否为空
+        if [ -f "README.md" ]; then
+          if [ ! -s "README.md" ]; then
+            echo "Warning: README.md is empty"
+          fi
+        fi
+        
+        # 检查 CHANGELOG 是否更新
+        if [ -f "docs/changelog.md" ]; then
+          echo "✓ Found CHANGELOG"
+        fi
+        
+    - name: Check for TODO comments
+      run: |
+        echo "Checking for TODO/FIXME comments..."
+        
+        todos=$(grep -r "TODO\|FIXME\|XXX" --include="*.js" --include="*.wxml" --include="*.wxss" . | grep -v node_modules | grep -v ".git" || true)
+        
+        if [ -n "$todos" ]; then
+          echo "Found TODO/FIXME comments:"
+          echo "$todos"
+          echo ""
+          echo "Note: Please review and resolve these items"
+        else
+          echo "No TODO/FIXME comments found"
+        fi
