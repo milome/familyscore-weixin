@@ -1,0 +1,78 @@
+{
+  "version": "1.0",
+  "rules": {
+    "file-naming": {
+      "description": "File naming conventions for WeChat Mini Program",
+      "patterns": {
+        "pages": "pages/**/*.{js,json,wxml,wxss}",
+        "components": "components/**/*.{js,json,wxml,wxss}",
+        "utils": "utils/*.js",
+        "services": "services/*.js",
+        "cloudfunctions": "cloudfunctions/**/*.js"
+      }
+    },
+    "code-style": {
+      "description": "Code style guidelines",
+      "indentation": {
+        "type": "spaces",
+        "size": 2
+      },
+      "max-line-length": 100,
+      "quote-style": "single",
+      "semicolons": true
+    },
+    "component-structure": {
+      "description": "Component file structure requirements",
+      "required-files": ["js", "json", "wxml", "wxss"],
+      "naming-convention": "kebab-case"
+    },
+    "page-structure": {
+      "description": "Page file structure requirements",
+      "required-files": ["js", "json", "wxml", "wxss"],
+      "naming-convention": "kebab-case"
+    },
+    "imports": {
+      "description": "Import statement organization",
+      "order": [
+        "absolute-imports",
+        "relative-imports",
+        "third-party-imports"
+      ]
+    },
+    "comments": {
+      "description": "Comment requirements",
+      "required-functions": true,
+      "required-classes": true,
+      "required-complex-logic": true
+    },
+    "error-handling": {
+      "description": "Error handling requirements",
+      "required-try-catch": ["async-functions", "api-calls"],
+      "error-logging": true
+    },
+    "performance": {
+      "description": "Performance optimization rules",
+      "image-optimization": true,
+      "minify-code": true,
+      "lazy-loading": true
+    },
+    "security": {
+      "description": "Security requirements",
+      "no-sensitive-data": true,
+      "input-validation": true,
+      "api-key-protection": true
+    },
+    "testing": {
+      "description": "Testing requirements",
+      "unit-tests": true,
+      "test-coverage": 80
+    }
+  },
+  "ignore": [
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "*.min.js",
+    "*.min.css"
+  ]
+} 
